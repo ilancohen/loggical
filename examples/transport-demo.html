@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loggical Transport System Demo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .content {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+
+      .demo-section {
+        padding: 30px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .demo-section:last-child {
+        border-bottom: none;
+      }
+
+      .demo-section h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .demo-section .icon {
+        font-size: 1.5rem;
+      }
+
+      .explanation {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+      }
+
+      .explanation h4 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .explanation p {
+        margin-bottom: 15px;
+      }
+
+      .code-example {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 14px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+
+      .demo-controls {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .demo-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .demo-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .demo-button:active {
+        transform: translateY(0);
+      }
+
+      .output-container {
+        background: #1a202c;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .output {
+        color: #e2e8f0;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        min-height: 100px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .transport-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+
+      .transport-card {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .transport-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      }
+
+      .transport-card h4 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .transport-card .status {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-weight: 500;
+      }
+
+      .status.active {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status.inactive {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .loading {
+        text-align: center;
+        color: #667eea;
+        font-style: italic;
+        padding: 20px;
+      }
+
+      /* ANSI color classes */
+      .ansi-reset {
+        color: #e2e8f0;
+      }
+      .ansi-bold {
+        font-weight: bold;
+      }
+      .ansi-dim {
+        opacity: 0.7;
+      }
+      .ansi-black {
+        color: #2d3748;
+      }
+      .ansi-red {
+        color: #f56565;
+      }
+      .ansi-green {
+        color: #48bb78;
+      }
+      .ansi-yellow {
+        color: #ed8936;
+      }
+      .ansi-blue {
+        color: #4299e1;
+      }
+      .ansi-magenta {
+        color: #9f7aea;
+      }
+      .ansi-cyan {
+        color: #38b2ac;
+      }
+      .ansi-white {
+        color: #f7fafc;
+      }
+      .ansi-gray {
+        color: #a0aec0;
+      }
+      .ansi-bright-red {
+        color: #fc8181;
+      }
+      .ansi-bright-green {
+        color: #68d391;
+      }
+      .ansi-bright-yellow {
+        color: #f6e05e;
+      }
+      .ansi-bright-blue {
+        color: #63b3ed;
+      }
+      .ansi-bright-magenta {
+        color: #b794f6;
+      }
+      .ansi-bright-cyan {
+        color: #4fd1c7;
+      }
+      .ansi-bright-white {
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Transport System Demo</h1>
+        <p>Explore Loggical's pluggable transport architecture</p>
+      </div>
+
+      <div class="content">
+        <!-- Transport Overview -->
+        <div class="demo-section">
+          <h2><span class="icon">🔌</span>Transport Overview</h2>
+          <div class="explanation">
+            <h4>Pluggable Log Destinations</h4>
+            <p>
+              Loggical's transport system allows you to send logs to multiple
+              destinations simultaneously. Each transport can have its own
+              configuration, filtering, and formatting.
+            </p>
+            <div class="code-example">
+              <strong>Available Transports:</strong><br />
+              • <strong>ConsoleTransport</strong> - Browser console and Node.js
+              stdout<br />
+              • <strong>FileTransport</strong> - Write logs to files (Node.js
+              only)<br />
+              • <strong>WebSocketTransport</strong> - Real-time log streaming
+              (Node.js only)<br />
+              • <strong>Custom Transports</strong> - Build your own transport
+              implementations
+            </div>
+          </div>
+          <div class="demo-controls">
+            <button class="demo-button" onclick="demonstrateBasicTransports()">
+              🔌 Basic Transport Usage
+            </button>
+            <button class="demo-button" onclick="showTransportStatus()">
+              📊 Transport Status
+            </button>
+          </div>
+          <div class="output-container">
+            <div id="transport-overview-output" class="output"></div>
+          </div>
+        </div>
+
+        <!-- Multiple Transports -->
+        <div class="demo-section">
+          <h2><span class="icon">🔀</span>Multiple Transports</h2>
+          <div class="explanation">
+            <h4>Send Logs to Multiple Destinations</h4>
+            <p>
+              Configure a logger to send the same log message to multiple
+              transports simultaneously. Each transport can have different
+              filtering and formatting rules.
+            </p>
+          </div>
+          <div class="demo-controls">
+            <button
+              class="demo-button"
+              onclick="demonstrateMultipleTransports()"
+            >
+              🔀 Multiple Destinations
+            </button>
+            <button
+              class="demo-button"
+              onclick="demonstrateTransportFiltering()"
+            >
+              🎯 Transport Filtering
+            </button>
+          </div>
+          <div class="output-container">
+            <div id="multiple-transports-output" class="output"></div>
+          </div>
+        </div>
+
+        <!-- Custom Transport -->
+        <div class="demo-section">
+          <h2><span class="icon">🛠️</span>Custom Transport</h2>
+          <div class="explanation">
+            <h4>Build Your Own Transport</h4>
+            <p>
+              Create custom transports for specialized logging needs. Implement
+              the Transport interface to send logs anywhere - databases, APIs,
+              message queues, etc.
+            </p>
+            <div class="code-example">
+              <strong>Custom Transport Example:</strong><br />
+              class EmailTransport extends BaseTransport {<br />
+              &nbsp;&nbsp;async write(message, metadata) {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;if (metadata.level >= LogLevel.ERROR) {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await sendEmail(message)<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+              &nbsp;&nbsp;}<br />
+              }
+            </div>
+          </div>
+          <div class="demo-controls">
+            <button class="demo-button" onclick="demonstrateCustomTransport()">
+              🛠️ Custom Transport Demo
+            </button>
+            <button class="demo-button" onclick="showTransportInterface()">
+              📋 Transport Interface
+            </button>
+          </div>
+          <div class="output-container">
+            <div id="custom-transport-output" class="output"></div>
+          </div>
+        </div>
+
+        <!-- Transport Configuration -->
+        <div class="demo-section">
+          <h2><span class="icon">⚙️</span>Transport Configuration</h2>
+          <div class="explanation">
+            <h4>Advanced Transport Settings</h4>
+            <p>
+              Configure transports with custom options like minimum log levels,
+              custom filters, error handling, and transport-specific settings.
+            </p>
+          </div>
+          <div class="demo-controls">
+            <button class="demo-button" onclick="demonstrateTransportConfig()">
+              ⚙️ Configuration Options
+            </button>
+            <button class="demo-button" onclick="demonstrateErrorHandling()">
+              🚨 Error Handling
+            </button>
+          </div>
+          <div class="output-container">
+            <div id="transport-config-output" class="output"></div>
+          </div>
+        </div>
+
+        <!-- Real-world Examples -->
+        <div class="demo-section">
+          <h2><span class="icon">🌍</span>Real-world Examples</h2>
+          <div class="explanation">
+            <h4>Production Transport Setups</h4>
+            <p>
+              See how to configure transports for different environments and use
+              cases. From development debugging to production monitoring.
+            </p>
+          </div>
+          <div class="demo-controls">
+            <button class="demo-button" onclick="demonstrateDevSetup()">
+              💻 Development Setup
+            </button>
+            <button class="demo-button" onclick="demonstrateProdSetup()">
+              🏭 Production Setup
+            </button>
+            <button class="demo-button" onclick="demonstrateMonitoringSetup()">
+              📈 Monitoring Setup
+            </button>
+          </div>
+          <div class="output-container">
+            <div id="realworld-output" class="output"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import {
+        Logger,
+        LogLevel,
+        BaseTransport,
+        ConsoleTransport,
+      } from "loggical";
+
+      // ANSI to HTML conversion function
+      function ansiToHtml(text) {
+        const ansiMap = {
+          0: "reset",
+          1: "ansi-bold",
+          2: "ansi-dim",
+          30: "ansi-black",
+          31: "ansi-red",
+          32: "ansi-green",
+          33: "ansi-yellow",
+          34: "ansi-blue",
+          35: "ansi-magenta",
+          36: "ansi-cyan",
+          37: "ansi-white",
+          90: "ansi-gray",
+          91: "ansi-bright-red",
+          92: "ansi-bright-green",
+          93: "ansi-bright-yellow",
+          94: "ansi-bright-blue",
+          95: "ansi-bright-magenta",
+          96: "ansi-bright-cyan",
+          97: "ansi-bright-white",
+          39: "reset-fg",
+        };
+
+        let html = text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+
+        let openSpans = [];
+
+        html = html.replace(
+          /(?:\033\[|\x1b\[|\[)([0-9;]+)m/g,
+          (match, codes) => {
+            const codeList = codes.split(";");
+            let result = "";
+
+            for (const code of codeList) {
+              const numCode = parseInt(code, 10);
+              if (numCode === 0) {
+                // Reset - close all spans
+                result += "</span>".repeat(openSpans.length);
+                openSpans = [];
+              } else if (ansiMap[numCode]) {
+                const className = ansiMap[numCode];
+                if (className !== "reset-fg") {
+                  result += `<span class="${className}">`;
+                  openSpans.push(className);
+                }
+              }
+            }
+
+            return result;
+          }
+        );
+
+        // Close any remaining open spans
+        html += "</span>".repeat(openSpans.length);
+
+        return html;
+      }
+
+      // Demo Transport class for capturing output
+      class DemoTransport extends BaseTransport {
+        constructor(outputElementId, clear = true) {
+          super();
+          this.name = "demo";
+          this.outputElementId = outputElementId;
+          this.messages = [];
+          if (clear) this.clear();
+        }
+
+        write(formattedMessage, metadata) {
+          this.messages.push(formattedMessage);
+          this.updateOutput();
+        }
+
+        updateOutput() {
+          const element = document.getElementById(this.outputElementId);
+          if (element) {
+            const html = this.messages.map((msg) => ansiToHtml(msg)).join("\n");
+            element.innerHTML = html;
+          }
+        }
+
+        clear() {
+          this.messages = [];
+          this.updateOutput();
+        }
+      }
+
+      // Custom transport examples
+      class DatabaseTransport extends BaseTransport {
+        constructor(options = {}) {
+          super(options);
+          this.name = "database";
+          this.connectionString =
+            options.connectionString || "postgresql://localhost/logs";
+        }
+
+        async write(formattedMessage, metadata) {
+          // Simulate database write
+          console.log(
+            `[DB Transport] Writing to ${this.connectionString}:`,
+            formattedMessage
+          );
+        }
+
+        getStatus() {
+          return {
+            ...super.getStatus(),
+            connectionString: this.connectionString,
+            connected: true, // Simulated
+          };
+        }
+      }
+
+      class EmailTransport extends BaseTransport {
+        constructor(options = {}) {
+          super({ minLevel: LogLevel.ERROR, ...options });
+          this.name = "email";
+          this.recipients = options.recipients || ["admin@example.com"];
+        }
+
+        async write(formattedMessage, metadata) {
+          // Only send emails for errors and above
+          if (metadata.level >= LogLevel.ERROR) {
+            console.log(
+              `[Email Transport] Sending alert to ${this.recipients.join(
+                ", "
+              )}:`,
+              formattedMessage
+            );
+          }
+        }
+      }
+
+      class MetricsTransport extends BaseTransport {
+        constructor(options = {}) {
+          super(options);
+          this.name = "metrics";
+          this.endpoint =
+            options.endpoint || "https://metrics.example.com/logs";
+          this.counters = new Map();
+        }
+
+        write(formattedMessage, metadata) {
+          // Count log levels
+          const levelName = Object.keys(LogLevel).find(
+            (key) => LogLevel[key] === metadata.level
+          );
+          const current = this.counters.get(levelName) || 0;
+          this.counters.set(levelName, current + 1);
+
+          console.log(`[Metrics Transport] ${levelName}: ${current + 1} total`);
+        }
+
+        getMetrics() {
+          return Object.fromEntries(this.counters);
+        }
+      }
+
+      // Demo functions
+      window.demonstrateBasicTransports = function () {
+        const transport = new DemoTransport("transport-overview-output");
+        transport.clear();
+
+        transport.write("=== Basic Transport Usage ===\n");
+
+        // Console transport (default)
+        transport.write("📺 Console Transport:");
+        const consoleLogger = new Logger({
+          transports: [new ConsoleTransport(), transport],
+        });
+        consoleLogger.info("This goes to both console and demo output");
+
+        transport.write("\n🎯 Custom Demo Transport:");
+        const demoLogger = new Logger({ transports: [transport] });
+        demoLogger.info("This only goes to the demo output");
+        demoLogger.warn("Transport system is flexible and powerful");
+        demoLogger.error("Each transport can handle messages differently");
+
+        transport.write(
+          "\n💡 Transports receive the formatted message and metadata"
+        );
+        transport.write(
+          "   They can filter, transform, or route messages as needed"
+        );
+      };
+
+      window.showTransportStatus = function () {
+        const transport = new DemoTransport("transport-overview-output");
+        transport.clear();
+
+        transport.write("=== Transport Status Information ===\n");
+
+        const transports = [
+          new ConsoleTransport(),
+          new DatabaseTransport({
+            connectionString: "postgresql://prod-db/logs",
+          }),
+          new EmailTransport({
+            recipients: ["alerts@company.com", "admin@company.com"],
+          }),
+          new MetricsTransport({ endpoint: "https://datadog.com/api/logs" }),
+        ];
+
+        transports.forEach((t) => {
+          const status = t.getStatus();
+          transport.write(`🔌 ${status.name} Transport:`);
+          transport.write(`   Name: ${status.name}`);
+          transport.write(
+            `   Options: ${JSON.stringify(status.options, null, 2)}`
+          );
+          if (status.connectionString) {
+            transport.write(`   Connection: ${status.connectionString}`);
+          }
+          if (status.recipients) {
+            transport.write(`   Recipients: ${status.recipients.join(", ")}`);
+          }
+          transport.write("");
+        });
+      };
+
+      window.demonstrateMultipleTransports = function () {
+        const transport = new DemoTransport("multiple-transports-output");
+        transport.clear();
+
+        transport.write("=== Multiple Transport Demo ===\n");
+
+        // Create multiple transports
+        const consoleTransport = new ConsoleTransport();
+        const dbTransport = new DatabaseTransport();
+        const emailTransport = new EmailTransport();
+        const metricsTransport = new MetricsTransport();
+
+        // Logger with multiple transports
+        const logger = new Logger({
+          transports: [
+            transport,
+            consoleTransport,
+            dbTransport,
+            emailTransport,
+            metricsTransport,
+          ],
+        });
+
+        transport.write("📤 Sending logs to multiple destinations:");
+        logger.info("User logged in", { userId: 12345, ip: "192.168.1.100" });
+        logger.warn("High memory usage detected", {
+          usage: 85.7,
+          threshold: 80,
+        });
+        logger.error("Database connection failed", {
+          host: "db.example.com",
+          error: "timeout",
+        });
+
+        transport.write("\n✅ Each transport processes the same log message:");
+        transport.write("   • Console: Displays in browser/terminal");
+        transport.write("   • Database: Stores for analysis");
+        transport.write("   • Email: Sends alerts for errors");
+        transport.write("   • Metrics: Counts and aggregates");
+      };
+
+      window.demonstrateTransportFiltering = function () {
+        const transport = new DemoTransport("multiple-transports-output");
+        transport.clear();
+
+        transport.write("=== Transport Filtering Demo ===\n");
+
+        // Create transports with different minimum levels
+        const debugTransport = new DemoTransport(
+          "multiple-transports-output",
+          false
+        );
+        debugTransport.name = "debug-file";
+
+        const errorTransport = new EmailTransport({
+          minLevel: LogLevel.ERROR,
+          recipients: ["alerts@company.com"],
+        });
+
+        const metricsTransport = new MetricsTransport({
+          filter: (level, message, metadata) => {
+            // Only track user-related events
+            return message.includes("user") || message.includes("User");
+          },
+        });
+
+        const logger = new Logger({
+          transports: [
+            transport,
+            debugTransport,
+            errorTransport,
+            metricsTransport,
+          ],
+        });
+
+        transport.write("🎯 Testing transport filtering:\n");
+
+        transport.write("DEBUG level (only debug transport gets this):");
+        logger.debug("Detailed debugging information");
+
+        transport.write("\nINFO level (debug transport gets this):");
+        logger.info("User session started", { userId: 123 });
+
+        transport.write("\nWARN level (debug transport gets this):");
+        logger.warn("API rate limit approaching");
+
+        transport.write("\nERROR level (all transports get this):");
+        logger.error("User authentication failed", {
+          userId: 123,
+          reason: "invalid_token",
+        });
+
+        transport.write("\n📊 Transport Filtering Results:");
+        transport.write("   • Debug Transport: Gets all levels");
+        transport.write("   • Email Transport: Only ERROR and above");
+        transport.write("   • Metrics Transport: Only user-related messages");
+        transport.write("   • Demo Transport: Gets everything (no filter)");
+      };
+
+      window.demonstrateCustomTransport = function () {
+        const transport = new DemoTransport("custom-transport-output");
+        transport.clear();
+
+        transport.write("=== Custom Transport Demo ===\n");
+
+        // Slack notification transport
+        class SlackTransport extends BaseTransport {
+          constructor(options = {}) {
+            super({ minLevel: LogLevel.WARN, ...options });
+            this.name = "slack";
+            this.webhook =
+              options.webhook || "https://hooks.slack.com/services/...";
+            this.channel = options.channel || "#alerts";
+          }
+
+          async write(formattedMessage, metadata) {
+            const emoji =
+              metadata.level >= LogLevel.ERROR
+                ? "🚨"
+                : metadata.level >= LogLevel.WARN
+                ? "⚠️"
+                : "ℹ️";
+
+            const slackMessage = `${emoji} ${formattedMessage}`;
+            transport.write(
+              `[Slack] Sending to ${this.channel}: ${slackMessage}`
+            );
+          }
+        }
+
+        // Analytics transport
+        class AnalyticsTransport extends BaseTransport {
+          constructor(options = {}) {
+            super(options);
+            this.name = "analytics";
+            this.events = [];
+          }
+
+          write(formattedMessage, metadata) {
+            const event = {
+              timestamp: metadata.timestamp,
+              level: metadata.level,
+              message: formattedMessage,
+              namespace: metadata.namespace,
+              context: metadata.context,
+            };
+
+            this.events.push(event);
+            transport.write(
+              `[Analytics] Tracked event: ${JSON.stringify(event, null, 2)}`
+            );
+          }
+
+          getEvents() {
+            return this.events;
+          }
+        }
+
+        const slackTransport = new SlackTransport({
+          webhook: "https://hooks.slack.com/services/T123/B456/xyz",
+          channel: "#dev-alerts",
+        });
+
+        const analyticsTransport = new AnalyticsTransport();
+
+        const logger = new Logger({
+          transports: [transport, slackTransport, analyticsTransport],
+        });
+
+        transport.write("🛠️ Using custom transports:\n");
+
+        logger.info("Application started successfully");
+        logger.warn("Memory usage is high", { usage: 87.5, limit: 90 });
+        logger.error("Payment processing failed", {
+          orderId: "order_123",
+          amount: 99.99,
+          error: "card_declined",
+        });
+
+        transport.write("\n📈 Analytics Events Collected:");
+        const events = analyticsTransport.getEvents();
+        transport.write(`   Total events: ${events.length}`);
+        transport.write(
+          `   Error events: ${
+            events.filter((e) => e.level >= LogLevel.ERROR).length
+          }`
+        );
+        transport.write(
+          `   Warning events: ${
+            events.filter((e) => e.level === LogLevel.WARN).length
+          }`
+        );
+      };
+
+      window.showTransportInterface = function () {
+        const transport = new DemoTransport("custom-transport-output");
+        transport.clear();
+
+        transport.write("=== Transport Interface ===\n");
+
+        transport.write(`📋 Transport Interface Requirements:
+
+interface Transport {
+  readonly name: string;
+  write(formattedMessage: string, metadata: LogMetadata): Promise<void> | void;
+  configure?(options: Record<string, unknown>): void;
+  close?(): Promise<void> | void;
+  getStatus?(): Record<string, unknown>;
+}
+
+🏗️ BaseTransport Class (recommended):
+
+class MyTransport extends BaseTransport {
+  constructor(options = {}) {
+    super(options);  // Handles filtering, error handling
+    this.name = "my-transport";
+  }
+
+  async write(formattedMessage, metadata) {
+    // Your transport logic here
+    console.log("Sending to destination:", formattedMessage);
+  }
+}
+
+⚙️ Available Options:
+• minLevel: Minimum log level to process
+• filter: Custom filter function
+• silent: Suppress transport errors
+
+📊 Metadata Available:
+• level: Log level (number)
+• timestamp: Date object
+• namespace: Logger namespace
+• context: Attached context data
+• prefix: Logger prefixes
+• stackTrace: Error stack trace info`);
+      };
+
+      window.demonstrateTransportConfig = function () {
+        const transport = new DemoTransport("transport-config-output");
+        transport.clear();
+
+        transport.write("=== Transport Configuration Demo ===\n");
+
+        // Configure transports with different options
+        const fileTransport = new (class extends BaseTransport {
+          constructor(options) {
+            super(options);
+            this.name = "file";
+            this.filename = options.filename;
+          }
+
+          write(message, metadata) {
+            transport.write(`[File: ${this.filename}] ${message}`);
+          }
+        })({
+          filename: "app.log",
+          minLevel: LogLevel.INFO,
+          filter: (level, message, metadata) => {
+            // Skip debug messages from database namespace
+            return !(
+              metadata.namespace?.startsWith("db") && level === LogLevel.DEBUG
+            );
+          },
+        });
+
+        const alertTransport = new (class extends BaseTransport {
+          constructor(options) {
+            super(options);
+            this.name = "alert";
+            this.urgentOnly = options.urgentOnly;
+          }
+
+          write(message, metadata) {
+            const urgency =
+              metadata.level >= LogLevel.ERROR ? "URGENT" : "normal";
+            if (!this.urgentOnly || urgency === "URGENT") {
+              transport.write(`[Alert ${urgency}] ${message}`);
+            }
+          }
+        })({
+          minLevel: LogLevel.WARN,
+          urgentOnly: true,
+        });
+
+        const logger = new Logger({
+          transports: [transport, fileTransport, alertTransport],
+        });
+
+        transport.write("⚙️ Testing configured transports:\n");
+
+        logger.debug("Debug message (filtered by file transport)");
+        logger.info("Application started", { version: "1.2.3" });
+        logger.warn("High CPU usage detected", { usage: 92.1 });
+        logger.error("Critical system failure", { component: "database" });
+
+        transport.write("\n📋 Transport Configurations:");
+        transport.write(`   File Transport: minLevel=INFO, custom filter`);
+        transport.write(`   Alert Transport: minLevel=WARN, urgentOnly=true`);
+        transport.write(`   Demo Transport: no restrictions`);
+      };
+
+      window.demonstrateErrorHandling = function () {
+        const transport = new DemoTransport("transport-config-output");
+        transport.clear();
+
+        transport.write("=== Transport Error Handling Demo ===\n");
+
+        // Transport that sometimes fails
+        class UnreliableTransport extends BaseTransport {
+          constructor(options = {}) {
+            super(options);
+            this.name = "unreliable";
+            this.failureRate = options.failureRate || 0.3;
+          }
+
+          async write(message, metadata) {
+            if (Math.random() < this.failureRate) {
+              throw new Error("Simulated transport failure");
+            }
+            transport.write(`[Unreliable] Successfully sent: ${message}`);
+          }
+        }
+
+        // Silent transport (errors don't show)
+        const silentTransport = new UnreliableTransport({
+          failureRate: 1.0, // Always fails
+          silent: true,
+        });
+
+        // Verbose transport (errors show)
+        const verboseTransport = new UnreliableTransport({
+          failureRate: 0.5,
+          silent: false,
+        });
+
+        const logger = new Logger({
+          transports: [transport, silentTransport, verboseTransport],
+        });
+
+        transport.write("🚨 Testing error handling:\n");
+
+        for (let i = 1; i <= 5; i++) {
+          logger.info(`Test message ${i}`, { attempt: i });
+        }
+
+        transport.write("\n💡 Error Handling Features:");
+        transport.write(
+          "   • silent: true - Suppresses transport error messages"
+        );
+        transport.write(
+          "   • silent: false - Shows transport errors in console"
+        );
+        transport.write("   • Failing transports don't stop other transports");
+        transport.write(
+          "   • Logger continues working even if transports fail"
+        );
+      };
+
+      window.demonstrateDevSetup = function () {
+        const transport = new DemoTransport("realworld-output");
+        transport.clear();
+
+        transport.write("=== Development Environment Setup ===\n");
+
+        // Development logger with multiple transports
+        const devLogger = new Logger({
+          preset: "readable",
+          transports: [
+            new ConsoleTransport({
+              includeStackTrace: true,
+              useGroups: true,
+            }),
+            new (class extends BaseTransport {
+              constructor() {
+                super();
+                this.name = "dev-file";
+              }
+              write(message) {
+                transport.write(`[dev.log] ${message}`);
+              }
+            })(),
+            new (class extends BaseTransport {
+              constructor() {
+                super({ minLevel: LogLevel.ERROR });
+                this.name = "error-file";
+              }
+              write(message) {
+                transport.write(`[errors.log] ${message}`);
+              }
+            })(),
+          ],
+        });
+
+        transport.write("💻 Development Transport Setup:");
+        transport.write("   • Console: Full output with stack traces");
+        transport.write("   • dev.log: All messages for debugging");
+        transport.write("   • errors.log: Only errors for quick review\n");
+
+        devLogger.debug("Starting development server");
+        devLogger.info("Hot reload enabled", { port: 3000 });
+        devLogger.warn("Using development database", { db: "dev_db" });
+        devLogger.error("Failed to load config file", {
+          file: "config.dev.json",
+        });
+
+        transport.write("\n✅ Perfect for development:");
+        transport.write("   • Rich console output for immediate feedback");
+        transport.write("   • File logs for later analysis");
+        transport.write(
+          "   • Separate error log for quick issue identification"
+        );
+      };
+
+      window.demonstrateProdSetup = function () {
+        const transport = new DemoTransport("realworld-output");
+        transport.clear();
+
+        transport.write("=== Production Environment Setup ===\n");
+
+        // Production logger with structured logging
+        const prodLogger = new Logger({
+          preset: "server",
+          transports: [
+            new (class extends BaseTransport {
+              constructor() {
+                super({ minLevel: LogLevel.INFO });
+                this.name = "app-log";
+              }
+              write(message, metadata) {
+                const structured = {
+                  timestamp: metadata.timestamp.toISOString(),
+                  level: metadata.level,
+                  message: message,
+                  namespace: metadata.namespace,
+                  context: metadata.context,
+                };
+                transport.write(`[app.log] ${JSON.stringify(structured)}`);
+              }
+            })(),
+            new (class extends BaseTransport {
+              constructor() {
+                super({ minLevel: LogLevel.ERROR });
+                this.name = "error-alert";
+              }
+              write(message, metadata) {
+                transport.write(`[PagerDuty] ALERT: ${message}`);
+              }
+            })(),
+            new (class extends BaseTransport {
+              constructor() {
+                super();
+                this.name = "metrics";
+              }
+              write(message, metadata) {
+                transport.write(`[DataDog] metric.log.${metadata.level} +1`);
+              }
+            })(),
+          ],
+        });
+
+        transport.write("🏭 Production Transport Setup:");
+        transport.write("   • Structured JSON logs for parsing");
+        transport.write("   • Error alerts to PagerDuty");
+        transport.write("   • Metrics to monitoring system\n");
+
+        prodLogger.info("Application started", {
+          version: "1.2.3",
+          environment: "production",
+          nodeVersion: process?.version || "v18.0.0",
+        });
+        prodLogger.warn("High memory usage", { usage: 85.7, threshold: 80 });
+        prodLogger.error("Payment processing failed", {
+          orderId: "ord_123",
+          amount: 99.99,
+          error: "gateway_timeout",
+        });
+
+        transport.write("\n🎯 Production Benefits:");
+        transport.write("   • Structured logs for log aggregation tools");
+        transport.write("   • Immediate alerts for critical issues");
+        transport.write("   • Metrics integration for dashboards");
+        transport.write("   • Minimal console output for performance");
+      };
+
+      window.demonstrateMonitoringSetup = function () {
+        const transport = new DemoTransport("realworld-output");
+        transport.clear();
+
+        transport.write("=== Monitoring & Observability Setup ===\n");
+
+        // Monitoring-focused logger
+        const monitoringLogger = new Logger({
+          transports: [
+            new (class extends BaseTransport {
+              constructor() {
+                super();
+                this.name = "elasticsearch";
+              }
+              write(message, metadata) {
+                const doc = {
+                  "@timestamp": metadata.timestamp.toISOString(),
+                  level: metadata.level,
+                  message: message,
+                  service: "my-app",
+                  environment: "production",
+                  ...metadata.context,
+                };
+                transport.write(`[Elasticsearch] ${JSON.stringify(doc)}`);
+              }
+            })(),
+            new (class extends BaseTransport {
+              constructor() {
+                super({
+                  filter: (level, message, metadata) => {
+                    // Only send business events to analytics
+                    return (
+                      message.includes("user") ||
+                      message.includes("order") ||
+                      message.includes("payment")
+                    );
+                  },
+                });
+                this.name = "analytics";
+              }
+              write(message, metadata) {
+                transport.write(`[Analytics] Event tracked: ${message}`);
+              }
+            })(),
+            new (class extends BaseTransport {
+              constructor() {
+                super({ minLevel: LogLevel.WARN });
+                this.name = "slack";
+              }
+              write(message, metadata) {
+                const emoji = metadata.level >= LogLevel.ERROR ? "🚨" : "⚠️";
+                transport.write(`[Slack #alerts] ${emoji} ${message}`);
+              }
+            })(),
+          ],
+        });
+
+        transport.write("📈 Monitoring Transport Setup:");
+        transport.write("   • Elasticsearch: Full log aggregation");
+        transport.write("   • Analytics: Business event tracking");
+        transport.write("   • Slack: Team notifications\n");
+
+        monitoringLogger.info("User registration completed", {
+          userId: 12345,
+          email: "user@example.com",
+          source: "web",
+        });
+        monitoringLogger.info("Order placed successfully", {
+          orderId: "ord_789",
+          amount: 149.99,
+          userId: 12345,
+        });
+        monitoringLogger.warn("Payment retry required", {
+          orderId: "ord_789",
+          attempt: 2,
+          reason: "insufficient_funds",
+        });
+        monitoringLogger.error("Service unavailable", {
+          service: "payment-gateway",
+          duration: "30s",
+        });
+
+        transport.write("\n🔍 Observability Benefits:");
+        transport.write("   • Centralized log search and analysis");
+        transport.write("   • Business metrics and user behavior tracking");
+        transport.write("   • Real-time team notifications");
+        transport.write("   • Correlation between logs, metrics, and traces");
+      };
+
+      // Initialize with basic transport demo
+      document.addEventListener("DOMContentLoaded", function () {
+        demonstrateBasicTransports();
+      });
+    </script>
+  </body>
+</html>

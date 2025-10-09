@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loggical Browser Example</title>
+  <style>
+    body {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #4fc3f7;
+      margin-bottom: 30px;
+    }
+    .demo-section {
+      background: #2a2a2a;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      border-left: 4px solid #4fc3f7;
+    }
+    button {
+      background: #4fc3f7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #29b6f6;
+    }
+    #output {
+      background: #0d1117;
+      color: #e6edf3;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Loggical Browser Example</h1>
+    
+    <div class="demo-section">
+      <h3>Basic Logging</h3>
+      <button onclick="basicDemo()">Run Basic Demo</button>
+      <button onclick="compactDemo()">Run Compact Demo</button>
+      <button onclick="readableDemo()">Run Readable Demo</button>
+    </div>
+
+    <div class="demo-section">
+      <h3>Advanced Features</h3>
+      <button onclick="contextDemo()">Context Demo</button>
+      <button onclick="errorDemo()">Error Demo</button>
+      <button onclick="objectDemo()">Object Demo</button>
+    </div>
+
+    <div class="demo-section">
+      <button onclick="clearOutput()">Clear Output</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script type="module">
+    import { logger, compactLogger, readableLogger, Logger, LogLevel, ColorLevel } from '../dist/index.js'
+
+    // Capture console output to display in the page
+    const output = document.getElementById('output')
+    const originalLog = console.log
+    const originalWarn = console.warn
+    const originalError = console.error
+
+    function captureOutput(level, ...args) {
+      const timestamp = new Date().toLocaleTimeString()
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ')
+      
+      output.textContent += `[${timestamp}] ${message}\n`
+      output.scrollTop = output.scrollHeight
+      
+      // Also call original console method
+      if (level === 'log') originalLog(...args)
+      else if (level === 'warn') originalWarn(...args)
+      else if (level === 'error') originalError(...args)
+    }
+
+    console.log = (...args) => captureOutput('log', ...args)
+    console.warn = (...args) => captureOutput('warn', ...args)
+    console.error = (...args) => captureOutput('error', ...args)
+
+    // Demo functions
+    window.basicDemo = () => {
+      output.textContent += '\n=== Basic Logger Demo ===\n'
+      logger.debug('Debug message from browser')
+      logger.info('Info message from browser')
+      logger.warn('Warning message from browser')
+      logger.error('Error message from browser')
+      logger.highlight('Highlighted message from browser')
+    }
+
+    window.compactDemo = () => {
+      output.textContent += '\n=== Compact Logger Demo ===\n'
+      compactLogger.info('Task completed', { 
+        id: 'task-123', 
+        duration: 150,
+        status: 'success'
+      })
+      compactLogger.warn('High memory usage', { 
+        usage: 85.7, 
+        threshold: 80 
+      })
+    }
+
+    window.readableDemo = () => {
+      output.textContent += '\n=== Readable Logger Demo ===\n'
+      const apiLogger = readableLogger.withPrefix('API-SERVER')
+      apiLogger.info('Request processed')
+      apiLogger.debug('Component rendered', {
+        component: 'UserProfile',
+        renderTime: '15ms'
+      })
+    }
+
+    window.contextDemo = () => {
+      output.textContent += '\n=== Context Demo ===\n'
+      const userLogger = logger.withContext('userId', 'user-123')
+      const requestLogger = userLogger.withContext({
+        requestId: 'req-456',
+        method: 'POST',
+        ip: '192.168.1.100'
+      })
+      
+      requestLogger.info('Processing request')
+      requestLogger.info('Request completed successfully')
+    }
+
+    window.errorDemo = () => {
+      output.textContent += '\n=== Error Demo ===\n'
+      try {
+        throw new Error('Sample error for demonstration')
+      } catch (error) {
+        logger.error('Caught an error:', error)
+      }
+    }
+
+    window.objectDemo = () => {
+      output.textContent += '\n=== Object Demo ===\n'
+      const complexObject = {
+        user: {
+          id: 'user-123',
+          email: 'user@example.com',
+          profile: {
+            name: 'John Doe',
+            settings: {
+              theme: 'dark',
+              notifications: true
+            }
+          }
+        },
+        session: {
+          id: 'sess-abc-123',
+          created: new Date().toISOString(),
+          expires: new Date(Date.now() + 3600000).toISOString()
+        }
+      }
+      
+      logger.info('Complex object logging:', complexObject)
+      compactLogger.info('Same object with compact formatting:', complexObject)
+    }
+
+    window.clearOutput = () => {
+      output.textContent = ''
+    }
+
+    // Initial demo
+    output.textContent = '🚀 Loggical Browser Example Ready!\nClick buttons above to see different logging demos.\n\n'
+  </script>
+</body>
+</html>

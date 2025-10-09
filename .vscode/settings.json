@@ -1,0 +1,50 @@
+{
+  // ESLint Configuration
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  
+  // Auto-fix ESLint problems on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  
+  // Disable default formatting on save to prevent conflicts
+  "editor.formatOnSave": false,
+  
+  // Disable Prettier extension if installed
+  "prettier.enable": false,
+  
+  // Set ESLint as the default formatter for supported languages
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  
+  // Additional ESLint settings
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  
+  // Ensure ESLint runs on save
+  "eslint.run": "onSave",
+  
+  // TypeScript configuration for tests
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@loggical/websocket-plugin",
+  "version": "1.0.0",
+  "description": "WebSocket transport plugin for Loggical logging library",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "loggical",
+    "logging",
+    "websocket",
+    "plugin",
+    "transport",
+    "real-time"
+  ],
+  "author": "Loggical Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "loggical": "^1.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  }
+}

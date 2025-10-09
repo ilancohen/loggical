@@ -1,0 +1,41 @@
+{
+  "name": "@loggical/namespace-plugin",
+  "version": "1.0.0", 
+  "description": "Hierarchical namespace plugin for Loggical logging library",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "loggical",
+    "logging",
+    "namespace",
+    "plugin",
+    "hierarchical",
+    "filtering"
+  ],
+  "author": "Loggical Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "loggical": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  }
+}

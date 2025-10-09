@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Loggical Browser Playground</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Loggical Browser Playground</h1>
+    <p>Open your browser console to see the logger in action!</p>
+
+    <h2>Quick Actions</h2>
+    <div class="button-group">
+        <button id="debug-btn">Debug Log</button>
+        <button id="info-btn">Info Log</button>
+        <button id="warn-btn">Warn Log</button>
+        <button id="error-btn">Error Log</button>
+        <button id="highlight-btn">Highlight Log</button>
+    </div>
+</div>
+
+<div class="container playground">
+    <h2>🎮 Logger Playground</h2>
+    <p>Customize your logger settings and see the colorized output in real-time!</p>
+    
+    <div class="preset-buttons">
+        <button class="preset-btn" data-preset="standard">Standard</button>
+        <button class="preset-btn" data-preset="compact">Compact</button>
+        <button class="preset-btn" data-preset="readable">Readable</button>
+        <button class="preset-btn" data-preset="server">Server</button>
+    </div>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="message">Custom Message</label>
+            <textarea id="message" placeholder="Enter your custom log message here...">Hello from the Loggical playground! 🚀</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="log-level">Log Level</label>
+            <select id="log-level">
+                <option value="0">DEBUG</option>
+                <option value="1" selected>INFO</option>
+                <option value="2">WARN</option>
+                <option value="3">ERROR</option>
+                <option value="4">HIGHLIGHT</option>
+                <option value="5">FATAL</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="prefix">Prefix</label>
+            <input type="text" id="prefix" placeholder="e.g., API, DB, AUTH" value="PLAYGROUND">
+            <div class="hint">Optional prefix to identify the source</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="color-level">Color Level</label>
+            <select id="color-level">
+                <option value="NONE">None (No Colors)</option>
+                <option value="BASIC">Basic</option>
+                <option value="ENHANCED" selected>Enhanced</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="checkbox-group">
+        <div class="checkbox-item">
+            <input type="checkbox" id="timestamped" checked>
+            <label for="timestamped">Show Timestamps</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="short-timestamp" checked>
+            <label for="short-timestamp">Short Timestamps</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="use-symbols" checked>
+            <label for="use-symbols">Use Symbols</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="compact-objects">
+            <label for="compact-objects">Compact Objects</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="space-messages">
+            <label for="space-messages">Space Messages</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="show-separators">
+            <label for="show-separators">Show Separators</label>
+        </div>
+    </div>
+    
+    <button id="try-logger" class="try-it-btn">🚀 Try It Out!</button>
+    
+    <h3>Preview Output:</h3>
+    <div id="log-preview" class="log-output">
+        Click "Try It Out!" to see your customized logger output here...
+    </div>
+</div>
+
+<script type="module" src="playground.js"></script>
+</body>
+</html>

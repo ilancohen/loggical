@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loggical Interactive Demos</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 40px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .demos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        padding: 40px;
+      }
+
+      .demo-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .demo-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      .demo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+      }
+
+      .demo-card h3 {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .demo-card .icon {
+        font-size: 1.8rem;
+      }
+
+      .demo-card p {
+        color: #6c757d;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .demo-card .features {
+        list-style: none;
+        margin-bottom: 25px;
+      }
+
+      .demo-card .features li {
+        color: #495057;
+        margin-bottom: 8px;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .demo-card .features li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+      }
+
+      .demo-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .demo-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .demo-button.secondary {
+        background: #6c757d;
+        margin-left: 10px;
+      }
+
+      .demo-button.secondary:hover {
+        background: #5a6268;
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+      }
+
+      .quick-start {
+        background: #e8f5e8;
+        border-left: 4px solid #28a745;
+        padding: 20px;
+        margin: 20px 40px;
+        border-radius: 8px;
+      }
+
+      .quick-start h3 {
+        color: #155724;
+        margin-bottom: 10px;
+      }
+
+      .quick-start code {
+        background: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+      }
+
+      .footer {
+        background: #f8f9fa;
+        padding: 30px 40px;
+        text-align: center;
+        color: #6c757d;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .demos-grid {
+          grid-template-columns: 1fr;
+          padding: 20px;
+        }
+
+        .demo-card {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Loggical Interactive Demos</h1>
+        <p>
+          Explore the powerful features of Loggical through hands-on,
+          interactive demonstrations. Each demo runs in your browser with
+          real-time examples.
+        </p>
+      </div>
+
+      <div class="quick-start">
+        <h3>🏃‍♂️ Quick Start</h3>
+        <p>
+          Install: <code>npm install loggical</code> • Import:
+          <code>import { logger } from 'loggical'</code> • Use:
+          <code>logger.info('Hello world!')</code>
+        </p>
+      </div>
+
+      <div class="demos-grid">
+        <div class="demo-card">
+          <h3><span class="icon">🎮</span>Interactive Playground</h3>
+          <p>
+            The ultimate hands-on experience! Configure logger settings in
+            real-time and see immediate results with live preview.
+          </p>
+          <ul class="features">
+            <li>Real-time configuration</li>
+            <li>Live output preview</li>
+            <li>All formatting options</li>
+            <li>Preset configurations</li>
+            <li>ANSI color rendering</li>
+          </ul>
+          <a href="playground/" class="demo-button">🚀 Launch Playground</a>
+          <a href="playground/README.md" class="demo-button secondary"
+            >📖 Guide</a
+          >
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🎯</span>Basic Usage Demo</h3>
+          <p>
+            Learn the fundamentals with an interactive guide covering all log
+            levels, basic configuration, and common patterns.
+          </p>
+          <ul class="features">
+            <li>All log levels (DEBUG to FATAL)</li>
+            <li>Object and error logging</li>
+            <li>Basic configuration</li>
+            <li>Prefix usage</li>
+            <li>Color levels</li>
+          </ul>
+          <a href="basic-demo.html" class="demo-button">📚 Start Learning</a>
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🎨</span>Formatting Showcase</h3>
+          <p>
+            Explore all formatting options with side-by-side comparisons. See
+            how different settings affect your log output.
+          </p>
+          <ul class="features">
+            <li>Timestamp formats</li>
+            <li>Object formatting styles</li>
+            <li>Color level comparison</li>
+            <li>Symbol vs text modes</li>
+            <li>Preset comparisons</li>
+          </ul>
+          <a href="formatting-demo.html" class="demo-button"
+            >🎨 Explore Formats</a
+          >
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🔒</span>Security & Redaction</h3>
+          <p>
+            Interactive demonstration of automatic sensitive data redaction with
+            configurable patterns and custom rules.
+          </p>
+          <ul class="features">
+            <li>Automatic password redaction</li>
+            <li>API key protection</li>
+            <li>Custom redaction patterns</li>
+            <li>Selective redaction control</li>
+            <li>Development vs production</li>
+          </ul>
+          <a href="security-demo.html" class="demo-button">🔐 Test Security</a>
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🏗️</span>Context & Prefixes</h3>
+          <p>
+            Learn how to add context and prefixes to your logs for better
+            organization and traceability in complex applications.
+          </p>
+          <ul class="features">
+            <li>Context attachment</li>
+            <li>Prefix management</li>
+            <li>Method chaining</li>
+            <li>Context inheritance</li>
+            <li>Real-world patterns</li>
+          </ul>
+          <a href="context-demo.html" class="demo-button">🏷️ Add Context</a>
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🌐</span>Namespace Management</h3>
+          <p>
+            Discover hierarchical namespace filtering for large applications
+            with multiple modules and components.
+          </p>
+          <ul class="features">
+            <li>Hierarchical namespaces</li>
+            <li>Pattern-based filtering</li>
+            <li>Logger factories</li>
+            <li>Environment configuration</li>
+            <li>Dynamic level control</li>
+          </ul>
+          <a href="namespace-demo.html" class="demo-button">🏢 Organize Logs</a>
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🚚</span>Transport System</h3>
+          <p>
+            Explore the flexible transport system for sending logs to multiple
+            destinations with different configurations.
+          </p>
+          <ul class="features">
+            <li>Multiple transports</li>
+            <li>File logging with rotation</li>
+            <li>WebSocket streaming</li>
+            <li>Custom transports</li>
+            <li>Transport filtering</li>
+          </ul>
+          <a href="transport-demo.html" class="demo-button">📡 Route Logs</a>
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">⚙️</span>Environment Config</h3>
+          <p>
+            Interactive guide to environment-based configuration using
+            environment variables and URL parameters.
+          </p>
+          <ul class="features">
+            <li>Environment variables</li>
+            <li>URL parameter config</li>
+            <li>Development vs production</li>
+            <li>Configuration precedence</li>
+            <li>Runtime detection</li>
+          </ul>
+          <a href="environment-demo.html" class="demo-button"
+            >🌍 Configure Environment</a
+          >
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">⚡</span>Performance Benchmark</h3>
+          <p>
+            Interactive performance testing to see how Loggical performs under
+            different conditions and configurations.
+          </p>
+          <ul class="features">
+            <li>Throughput testing</li>
+            <li>Memory usage analysis</li>
+            <li>Configuration impact</li>
+            <li>Browser vs Node.js</li>
+            <li>Real-time metrics</li>
+          </ul>
+          <a href="performance-demo.html" class="demo-button"
+            >⚡ Test Performance</a
+          >
+        </div>
+
+        <div class="demo-card">
+          <h3><span class="icon">🚀</span>Transport System</h3>
+          <p>
+            Explore Loggical's pluggable transport architecture. Send logs to
+            multiple destinations with custom filtering and configuration.
+          </p>
+          <ul class="features">
+            <li>Multiple destinations</li>
+            <li>Custom transports</li>
+            <li>Transport filtering</li>
+            <li>Error handling</li>
+            <li>Real-world examples</li>
+          </ul>
+          <a href="transport-demo.html" class="demo-button"
+            >🚀 Explore Transports</a
+          >
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          Built with ❤️ for developers who care about great logging.
+          <a href="https://github.com/ilancohen/loggical" target="_blank"
+            >View on GitHub</a
+          >
+          •
+          <a href="https://www.npmjs.com/package/loggical" target="_blank"
+            >NPM Package</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Add some interactive elements
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add hover effects and animations
+        const cards = document.querySelectorAll(".demo-card");
+
+        cards.forEach((card) => {
+          card.addEventListener("mouseenter", function () {
+            this.style.transform = "translateY(-8px) scale(1.02)";
+          });
+
+          card.addEventListener("mouseleave", function () {
+            this.style.transform = "translateY(0) scale(1)";
+          });
+        });
+
+        // Add click tracking for demo buttons
+        const buttons = document.querySelectorAll(".demo-button");
+        buttons.forEach((button) => {
+          button.addEventListener("click", function (e) {
+            // Add a subtle animation
+            this.style.transform = "scale(0.95)";
+            setTimeout(() => {
+              this.style.transform = "scale(1)";
+            }, 150);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

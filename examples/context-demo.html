@@ -389,7 +389,7 @@
 
           <div class="code-example">
             import { Logger } from 'loggical' // Basic prefix const apiLogger =
-            new Logger({ prefix: 'API' }) apiLogger.info('Request processed') //
+            createLogger({ prefix: 'API' }) apiLogger.info('Request processed') //
             With method chaining const dbLogger = logger.withPrefix('DATABASE')
             dbLogger.info('Query executed')
           </div>
@@ -729,7 +729,7 @@
     </div>
 
     <script type="module">
-      import { Logger, LogLevel } from "loggical";
+      import { createLogger, LogLevel } from "loggical";
 
       // ANSI to HTML conversion function
       function ansiToHtml(text) {
@@ -827,7 +827,7 @@
           parseInt(document.getElementById("max-prefix-length").value) || 10;
 
         const transport = new DemoTransport("prefix-output");
-        const logger = new Logger({
+        const logger = createLogger({
           prefix: prefixText,
           abbreviatePrefixes: abbreviate,
           maxPrefixLength: maxLength,
@@ -843,17 +843,17 @@
       window.demonstrateMultiplePrefixes = function () {
         const transport = new DemoTransport("prefix-output");
 
-        const apiLogger = new Logger({
+        const apiLogger = createLogger({
           prefix: "API",
           timestamped: false,
           transports: [transport],
         });
-        const dbLogger = new Logger({
+        const dbLogger = createLogger({
           prefix: "DATABASE",
           timestamped: false,
           transports: [transport],
         });
-        const authLogger = new Logger({
+        const authLogger = createLogger({
           prefix: "AUTH",
           timestamped: false,
           transports: [transport],
@@ -869,7 +869,7 @@
         const transport = new DemoTransport("prefix-output");
 
         // Long prefix without abbreviation
-        const longLogger = new Logger({
+        const longLogger = createLogger({
           prefix: "VERY_LONG_SERVICE_NAME",
           abbreviatePrefixes: false,
           timestamped: false,
@@ -877,7 +877,7 @@
         });
 
         // Long prefix with abbreviation
-        const abbrevLogger = new Logger({
+        const abbrevLogger = createLogger({
           prefix: "VERY_LONG_SERVICE_NAME",
           abbreviatePrefixes: true,
           maxPrefixLength: 8,
@@ -897,7 +897,7 @@
         const compact = document.getElementById("compact-context").checked;
 
         const transport = new DemoTransport("context-output");
-        const logger = new Logger({
+        const logger = createLogger({
           timestamped: false,
           transports: [transport],
         })
@@ -910,7 +910,7 @@
 
       window.demonstrateMultipleContext = function () {
         const transport = new DemoTransport("context-output");
-        const logger = new Logger({
+        const logger = createLogger({
           timestamped: false,
           transports: [transport],
         }).withContext({
@@ -927,7 +927,7 @@
 
       window.demonstrateContextInheritance = function () {
         const transport = new DemoTransport("context-output");
-        const baseLogger = new Logger({
+        const baseLogger = createLogger({
           timestamped: false,
           transports: [transport],
         });
@@ -951,7 +951,7 @@
       window.demonstrateChaining = function () {
         const transport = new DemoTransport("chaining-output");
 
-        const complexLogger = new Logger({
+        const complexLogger = createLogger({
           timestamped: false,
           transports: [transport],
         })
@@ -967,7 +967,7 @@
       window.demonstrateInheritance = function () {
         const transport = new DemoTransport("chaining-output");
 
-        const serviceLogger = new Logger({
+        const serviceLogger = createLogger({
           timestamped: false,
           transports: [transport],
         })
@@ -985,7 +985,7 @@
       window.demonstrateContextRemoval = function () {
         const transport = new DemoTransport("chaining-output");
 
-        const fullLogger = new Logger({
+        const fullLogger = createLogger({
           timestamped: false,
           transports: [transport],
         }).withContext({
@@ -1005,7 +1005,7 @@
 
       window.demonstrateScenario = function (scenario) {
         const transport = new DemoTransport("scenario-output");
-        const baseLogger = new Logger({
+        const baseLogger = createLogger({
           timestamped: false,
           transports: [transport],
         });
@@ -1104,7 +1104,7 @@
         const value2 = document.getElementById("builder-value2").value;
         const prefix2 = document.getElementById("builder-prefix2").value;
 
-        let logger = new Logger({
+        let logger = createLogger({
           timestamped: false,
           transports: [transport],
         });
@@ -1125,7 +1125,7 @@
 
         // Update code example
         const codeElement = document.getElementById("builder-code");
-        let code = "let logger = new Logger()\n";
+        let code = "let logger = createLogger()\n";
         if (prefix) code += `logger = logger.withPrefix('${prefix}')\n`;
         if (key1 && value1)
           code += `logger = logger.withContext('${key1}', '${value1}')\n`;
@@ -1147,7 +1147,7 @@
         const transport = new DemoTransport("builder-output");
         transport.clear();
 
-        const baseLogger = new Logger({
+        const baseLogger = createLogger({
           timestamped: false,
           transports: [transport],
         });
@@ -1171,7 +1171,7 @@
         const transport = new DemoTransport("practices-output");
         transport.clear();
 
-        const logger = new Logger({
+        const logger = createLogger({
           timestamped: false,
           transports: [transport],
         });
@@ -1199,7 +1199,7 @@
       window.demonstratePerformance = function () {
         const transport = new DemoTransport("practices-output");
 
-        const logger = new Logger({
+        const logger = createLogger({
           timestamped: false,
           transports: [transport],
         });
@@ -1213,7 +1213,7 @@
       window.demonstrateAntiPatterns = function () {
         const transport = new DemoTransport("practices-output");
 
-        const logger = new Logger({
+        const logger = createLogger({
           timestamped: false,
           transports: [transport],
         });

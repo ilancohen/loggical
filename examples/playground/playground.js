@@ -7,7 +7,7 @@
  */
 
 // Import the logger components (adjust path for nested folder)
-import { logger, Logger, LogLevel, ColorLevel } from '../../dist/index.js'
+import { logger, createLogger, LogLevel, ColorLevel } from '../../dist/index.js'
 
 // ========== BASIC EXAMPLE FUNCTIONALITY ==========
 
@@ -260,7 +260,7 @@ function updatePreview() {
         ...loggerOptions,
         transports: [previewTransport]
     }
-    const previewLogger = new Logger(previewLoggerOptions)
+    const previewLogger = createLogger(previewLoggerOptions)
 
     try {
         // Log the message at the specified level
@@ -328,7 +328,7 @@ function logToConsole() {
     const { message, logLevel, loggerOptions } = getCurrentLoggerConfig()
     
     // Create the actual logger for console output (uses default ConsoleTransport)
-    const actualLogger = new Logger(loggerOptions)
+    const actualLogger = createLogger(loggerOptions)
 
     try {
         // Log the message at the specified level to the real console

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { Logger } from '@core/logger';
+import { createLogger } from '@core/logger';
 import { ColorLevel } from '@/types/core.types';
 
 describe('Error Logging', () => {
@@ -7,7 +7,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
     const testError = new Error('Test error message');
     testError.stack = 'Error: Test error message\n    at test (test.ts:1:1)';
 
@@ -30,7 +30,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
     const testError = new Error('Direct error logging');
     testError.stack = 'Error: Direct error logging\n    at test (test.ts:1:1)';
 
@@ -52,7 +52,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false, compactObjects: true });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false, compactObjects: true });
     const testError = new Error('Compact error');
 
     logger.error({ error: testError });
@@ -72,7 +72,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
     const rootCause = new Error('Root cause');
     const wrappedError = new Error('Wrapped error');
     wrappedError.cause = rootCause;
@@ -95,7 +95,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
     const customError = new Error('Custom error')
     // Add custom properties to the error
     ;(customError as any).code = 'ERR_CUSTOM'
@@ -121,7 +121,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
 
     // Create a chain of errors
     const level3Error = new Error('Database connection failed');
@@ -147,7 +147,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
     const errorWithNonErrorCause = new Error('API failed');
     errorWithNonErrorCause.cause = 'Network timeout after 30s';
 
@@ -168,7 +168,7 @@ describe('Error Logging', () => {
     // Mock console.error to capture output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+    const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
     const regularObject = { message: 'Not an error', code: 123 };
 
     logger.error('Regular object', regularObject);

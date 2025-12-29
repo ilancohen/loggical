@@ -509,7 +509,7 @@
     </div>
 
     <script type="module">
-            import { Logger, ColorLevel, logger, compactLogger, readableLogger, serverLogger } from "loggical";
+            import { createLogger, ColorLevel, logger, compactLogger, readableLogger, serverLogger } from "loggical";
 
             // Performance monitoring state
             let monitoringInterval = null;
@@ -577,7 +577,7 @@
               updateProgress(0);
 
               const transport = new NullTransport();
-              const logger = new Logger({ transports: [transport] });
+              const logger = createLogger({ transports: [transport] });
 
               const results = measurePerformance((i) => {
                 logger.info(`Test message ${i}`, {
@@ -596,7 +596,7 @@
               updateProgress(0);
 
               const transport = new NullTransport();
-              const logger = new Logger({ transports: [transport] });
+              const logger = createLogger({ transports: [transport] });
 
               // Simulate async processing
               await new Promise((resolve) => setTimeout(resolve, 100));
@@ -624,7 +624,7 @@
               updateProgress(0);
 
               const transport = new NullTransport();
-              const logger = new Logger({ transports: [transport] });
+              const logger = createLogger({ transports: [transport] });
 
               // Measure memory before
               const memBefore = performance.memory
@@ -684,7 +684,7 @@
 
               for (let i = 0; i < configs.length; i++) {
                 const transport = new NullTransport();
-                const logger = new Logger({
+                const logger = createLogger({
                   ...configs[i].config,
                   transports: [transport],
                 });
@@ -766,7 +766,7 @@
               document.getElementById("stop-monitor-btn").disabled = false;
 
               const transport = new NullTransport();
-              const logger = new Logger({ transports: [transport] });
+              const logger = createLogger({ transports: [transport] });
 
               monitoringStartTime = Date.now();
               totalLogsProcessed = 0;
@@ -850,18 +850,18 @@
                           <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 13px;">
       <strong>// ❌ Inefficient - Creates new logger each time</strong>
       function logUserAction(action) {
-        const logger = new Logger({ prefix: 'USER' })
+        const logger = createLogger({ prefix: 'USER' })
         logger.info(action)
       }
 
       <strong>// ✅ Efficient - Reuse logger instance</strong>
-      const userLogger = new Logger({ prefix: 'USER' })
+      const userLogger = createLogger({ prefix: 'USER' })
       function logUserAction(action) {
         userLogger.info(action)
       }
 
       <strong>// ✅ Production optimized</strong>
-      const prodLogger = new Logger({
+      const prodLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         compactObjects: true,
@@ -869,7 +869,7 @@
       })
 
       <strong>// ✅ Development optimized</strong>
-      const devLogger = new Logger({
+      const devLogger = createLogger({
         colorLevel: ColorLevel.ENHANCED,
         timestamped: true,
         compactObjects: false,
@@ -885,10 +885,10 @@
               output.innerHTML = "<div class='loading'>🏁 Running preset benchmarks...</div>";
 
               const presets = [
-                { name: "Standard", logger: new Logger() },
-                { name: "Compact", logger: new Logger({ preset: "compact" }) },
-                { name: "Readable", logger: new Logger({ preset: "readable" }) },
-                { name: "Server", logger: new Logger({ preset: "server" }) }
+                { name: "Standard", logger: createLogger() },
+                { name: "Compact", logger: createLogger({ preset: "compact" }) },
+                { name: "Readable", logger: createLogger({ preset: "readable" }) },
+                { name: "Server", logger: createLogger({ preset: "server" }) }
               ];
 
               const results = [];

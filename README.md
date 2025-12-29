@@ -70,9 +70,9 @@ serverLogger.warn("Production-ready output");
 Use presets with minimal overrides:
 
 ```javascript
-import { Logger, LogLevel } from "loggical";
+import { createLogger, LogLevel } from "loggical";
 
-const apiLogger = new Logger({
+const apiLogger = createLogger({
   preset: "server",       // Use server preset as base
   prefix: "API",          // Add prefix
   minLevel: LogLevel.WARN // Override log level
@@ -80,6 +80,25 @@ const apiLogger = new Logger({
 
 apiLogger.warn("High memory usage", { usage: 85.7, threshold: 80 });
 // Output: 14:32:18.456 ⚠️ [API] High memory usage { usage: 85.7%, threshold: 80% }
+```
+
+### Per-Call Option Overrides
+
+Override formatting options for specific log calls:
+
+```javascript
+import { createLogger } from "loggical";
+
+const logger = createLogger({ compactObjects: true });
+
+// Normal compact output
+logger.info("Quick log", data);
+
+// Override for this call only - full object output
+logger({ compactObjects: false }).info("Full dump", bigObject);
+
+// Override multiple options
+logger({ compactObjects: false, maxValueLength: 500 }).debug("Verbose", data);
 ```
 
 ### Context Management
@@ -132,9 +151,9 @@ logger.info("User login", {
 Send logs to multiple destinations:
 
 ```javascript
-import { Logger, ConsoleTransport, FileTransport } from "loggical";
+import { createLogger, ConsoleTransport, FileTransport } from "loggical";
 
-const prodLogger = new Logger({
+const prodLogger = createLogger({
   transports: [
     new ConsoleTransport({ colors: false }),
     new FileTransport({
@@ -156,10 +175,10 @@ npm install @loggical/websocket-plugin
 ```
 
 ```javascript
-import { Logger } from "loggical";
+import { createLogger } from "loggical";
 import { WebSocketPlugin } from "@loggical/websocket-plugin";
 
-const devLogger = new Logger({
+const devLogger = createLogger({
   plugins: [
     new WebSocketPlugin({
       url: "ws://localhost:3001/dev-logs",
@@ -259,12 +278,11 @@ compactLogger.info("Browser logging works!", { userAgent: navigator.userAgent })
 For advanced scenarios, use the full configuration:
 
 ```javascript
-import { Logger, ColorLevel, LogLevel } from "loggical";
+import { createLogger, ColorLevel, LogLevel } from "loggical";
 
-const customLogger = new Logger({
+const customLogger = createLogger({
   // Identity & Organization
   prefix: "API",
-  namespace: "app:api",
   
   // Output Control
   minLevel: LogLevel.DEBUG,
@@ -278,8 +296,6 @@ const customLogger = new Logger({
   maxValueLength: 50,
   
   // Advanced
-  abbreviatePrefixes: true,
-  relativeTimestamps: true,
   showSeparators: true,
   
   // Security

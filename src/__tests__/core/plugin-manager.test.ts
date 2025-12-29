@@ -4,18 +4,18 @@
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { PluginManager } from '@core/plugin-manager';
-import { Logger } from '@core/logger';
+import { createLogger, type CallableLogger } from '@core/logger';
 import type { Plugin } from '@/types/plugin.types';
 
 describe('PluginManager', () => {
   let pluginManager: PluginManager;
-  let mockLogger: Logger;
+  let mockLogger: CallableLogger;
   let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    mockLogger = new Logger();
-    pluginManager = new PluginManager(mockLogger);
+    mockLogger = createLogger();
+    pluginManager = new PluginManager(mockLogger as any);
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -29,13 +29,13 @@ describe('PluginManager', () => {
   const createMockPlugin = (name: string, shouldFailInstall = false, shouldFailUninstall = false): Plugin => ({
     name,
     version: '1.0.0',
-    async install(logger: Logger) {
+    async install(logger: CallableLogger) {
       if (shouldFailInstall) {
         throw new Error(`Install failed for ${name}`);
       }
       (logger as any).__testPlugin = name;
     },
-    async uninstall(logger: Logger) {
+    async uninstall(logger: CallableLogger) {
       if (shouldFailUninstall) {
         throw new Error(`Uninstall failed for ${name}`);
       }
@@ -46,10 +46,10 @@ describe('PluginManager', () => {
   const createSyncMockPlugin = (name: string): Plugin => ({
     name,
     version: '1.0.0',
-    install(logger: Logger) {
+    install(logger: CallableLogger) {
       (logger as any).__syncPlugin = name;
     },
-    uninstall(logger: Logger) {
+    uninstall(logger: CallableLogger) {
       delete (logger as any).__syncPlugin;
     },
   });
@@ -316,11 +316,11 @@ describe('PluginManager', () => {
     it('should handle plugin that modifies logger state', async () => {
       const stateModifyingPlugin: Plugin = {
         name: 'state-modifier',
-        async install(logger: Logger) {
+        async install(logger: CallableLogger) {
           (logger as any).customMethod = () => 'custom';
           (logger as any).customProperty = 'test';
         },
-        async uninstall(logger: Logger) {
+        async uninstall(logger: CallableLogger) {
           delete (logger as any).customMethod;
           delete (logger as any).customProperty;
         },
@@ -427,7 +427,7 @@ describe('PluginManager', () => {
     it('should handle plugin that returns Promise from install', async () => {
       const plugin: Plugin = {
         name: 'promise-plugin',
-        install(logger: Logger): Promise<void> {
+        install(logger: CallableLogger): Promise<void> {
           return new Promise((resolve) => {
             setTimeout(() => {
               (logger as any).__promisePlugin = true;
@@ -446,10 +446,10 @@ describe('PluginManager', () => {
     it('should handle plugin that returns Promise from uninstall', async () => {
       const plugin: Plugin = {
         name: 'promise-plugin',
-        async install(logger: Logger) {
+        async install(logger: CallableLogger) {
           (logger as any).__promisePlugin = true;
         },
-        uninstall(logger: Logger): Promise<void> {
+        uninstall(logger: CallableLogger): Promise<void> {
           return new Promise((resolve) => {
             setTimeout(() => {
               delete (logger as any).__promisePlugin;

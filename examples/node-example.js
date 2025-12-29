@@ -1,5 +1,5 @@
 // Node.js example for loggical
-import { logger, Logger, ColorLevel } from '../dist/index.js'
+import { logger, createLogger, ColorLevel } from '../dist/index.js'
 
 // Use the default logger
 logger.debug('This is a debug message from Node.js')
@@ -9,7 +9,7 @@ logger.error('This is an error message from Node.js')
 logger.highlight('This is a highlighted message from Node.js')
 
 // Create a custom logger with a prefix
-const customLogger = new Logger({
+const customLogger = createLogger({
   prefix: 'NODE-TEST',
   colorLevel: ColorLevel.ENHANCED,
 })
@@ -31,5 +31,14 @@ try {
 }
 
 // Create a logger without colors
-const plainLogger = new Logger({ colorLevel: ColorLevel.NONE })
+const plainLogger = createLogger({ colorLevel: ColorLevel.NONE })
 plainLogger.info('This logger has colors disabled')
+
+// Per-call option overrides (new in v2.0)
+const compactLog = createLogger({ compactObjects: true })
+compactLog.info('Compact output', { data: 'value' })
+
+// Override for verbose output on specific calls
+compactLog({ compactObjects: false }).info('Full object dump', {
+  nested: { deep: { value: 'detailed' } }
+})

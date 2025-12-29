@@ -684,7 +684,7 @@
     </div>
 
     <script type="module">
-      import { Logger, ColorLevel } from "loggical";
+      import { createLogger, ColorLevel } from "loggical";
 
       // ANSI to HTML conversion function
       function ansiToHtml(text) {
@@ -807,13 +807,13 @@
         secureTransport.clear();
         insecureTransport.clear();
 
-        const secureLogger = new Logger({
+        const secureLogger = createLogger({
           redaction: true,
           timestamped: false,
           transports: [secureTransport],
         });
 
-        const insecureLogger = new Logger({
+        const insecureLogger = createLogger({
           redaction: false,
           timestamped: false,
           transports: [insecureTransport],
@@ -835,13 +835,13 @@
         const secureTransport = new DemoTransport("secure-output");
         const insecureTransport = new DemoTransport("insecure-output");
 
-        const secureLogger = new Logger({
+        const secureLogger = createLogger({
           redaction: true,
           timestamped: false,
           transports: [secureTransport],
         });
 
-        const insecureLogger = new Logger({
+        const insecureLogger = createLogger({
           redaction: false,
           timestamped: false,
           transports: [insecureTransport],
@@ -865,13 +865,13 @@
         const secureTransport = new DemoTransport("secure-output");
         const insecureTransport = new DemoTransport("insecure-output");
 
-        const secureLogger = new Logger({
+        const secureLogger = createLogger({
           redaction: true,
           timestamped: false,
           transports: [secureTransport],
         });
 
-        const insecureLogger = new Logger({
+        const insecureLogger = createLogger({
           redaction: false,
           timestamped: false,
           transports: [insecureTransport],
@@ -943,7 +943,7 @@
             break;
         }
 
-        const logger = new Logger({
+        const logger = createLogger({
           redaction: redactionConfig,
           timestamped: false,
           transports: [transport],
@@ -979,7 +979,7 @@
         const transport = new DemoTransport("scenario-output");
         transport.clear();
 
-        const logger = new Logger({
+        const logger = createLogger({
           redaction: true,
           timestamped: false,
           transports: [transport],
@@ -1060,7 +1060,7 @@
         prodTransport.clear();
 
         // Development logger - more permissive
-        const devLogger = new Logger({
+        const devLogger = createLogger({
           redaction: {
             includeKeys: ["password", "secret", "privateKey"], // Only most sensitive
             strings: false, // Don't redact strings in development
@@ -1071,7 +1071,7 @@
         });
 
         // Production logger - strict security
-        const prodLogger = new Logger({
+        const prodLogger = createLogger({
           redaction: true, // Full redaction
           timestamped: false,
           transports: [prodTransport],
@@ -1093,7 +1093,7 @@
         const transport = new DemoTransport("best-practices-output");
         transport.clear();
 
-        const logger = new Logger({
+        const logger = createLogger({
           redaction: true,
           timestamped: false,
           transports: [transport],

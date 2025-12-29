@@ -597,13 +597,13 @@
 
         // Console transport (default)
         transport.write("📺 Console Transport:");
-        const consoleLogger = new Logger({
+        const consoleLogger = createLogger({
           transports: [new ConsoleTransport(), transport],
         });
         consoleLogger.info("This goes to both console and demo output");
 
         transport.write("\n🎯 Custom Demo Transport:");
-        const demoLogger = new Logger({ transports: [transport] });
+        const demoLogger = createLogger({ transports: [transport] });
         demoLogger.info("This only goes to the demo output");
         demoLogger.warn("Transport system is flexible and powerful");
         demoLogger.error("Each transport can handle messages differently");
@@ -663,7 +663,7 @@
         const metricsTransport = new MetricsTransport();
 
         // Logger with multiple transports
-        const logger = new Logger({
+        const logger = createLogger({
           transports: [
             transport,
             consoleTransport,
@@ -716,7 +716,7 @@
           },
         });
 
-        const logger = new Logger({
+        const logger = createLogger({
           transports: [
             transport,
             debugTransport,
@@ -815,7 +815,7 @@
 
         const analyticsTransport = new AnalyticsTransport();
 
-        const logger = new Logger({
+        const logger = createLogger({
           transports: [transport, slackTransport, analyticsTransport],
         });
 
@@ -935,7 +935,7 @@ class MyTransport extends BaseTransport {
           urgentOnly: true,
         });
 
-        const logger = new Logger({
+        const logger = createLogger({
           transports: [transport, fileTransport, alertTransport],
         });
 
@@ -986,7 +986,7 @@ class MyTransport extends BaseTransport {
           silent: false,
         });
 
-        const logger = new Logger({
+        const logger = createLogger({
           transports: [transport, silentTransport, verboseTransport],
         });
 
@@ -1016,7 +1016,7 @@ class MyTransport extends BaseTransport {
         transport.write("=== Development Environment Setup ===\n");
 
         // Development logger with multiple transports
-        const devLogger = new Logger({
+        const devLogger = createLogger({
           preset: "readable",
           transports: [
             new ConsoleTransport({
@@ -1071,7 +1071,7 @@ class MyTransport extends BaseTransport {
         transport.write("=== Production Environment Setup ===\n");
 
         // Production logger with structured logging
-        const prodLogger = new Logger({
+        const prodLogger = createLogger({
           preset: "server",
           transports: [
             new (class extends BaseTransport {
@@ -1142,7 +1142,7 @@ class MyTransport extends BaseTransport {
         transport.write("=== Monitoring & Observability Setup ===\n");
 
         // Monitoring-focused logger
-        const monitoringLogger = new Logger({
+        const monitoringLogger = createLogger({
           transports: [
             new (class extends BaseTransport {
               constructor() {

@@ -636,7 +636,7 @@
 
     <script type="module">
       import {
-        Logger,
+        createLogger,
         LogLevel,
         ColorLevel,
         logger,
@@ -646,7 +646,7 @@
       } from "loggical";
 
       // Global logger instance for demos
-      let currentLogger = new Logger();
+      let currentLogger = createLogger();
 
       // ANSI to HTML conversion function
       function ansiToHtml(text) {
@@ -738,7 +738,7 @@
       // Global functions for demo buttons
       window.logLevel = function (level) {
         const transport = new DemoTransport("levels-output");
-        const logger = new Logger({ transports: [transport] });
+        const logger = createLogger({ transports: [transport] });
 
         const messages = {
           debug: "This is a debug message - detailed diagnostic information",
@@ -760,7 +760,7 @@
         const symbols = document.getElementById("symbols").checked;
 
         const transport = new DemoTransport("config-output");
-        currentLogger = new Logger({
+        currentLogger = createLogger({
           colorLevel: ColorLevel[colorLevel],
           prefix: prefix || undefined,
           timestamped: timestamps,
@@ -772,7 +772,7 @@
         const codeExample = document.getElementById("config-code");
         codeExample.textContent = `import { Logger, ColorLevel } from 'loggical'
 
-const logger = new Logger({
+const logger = createLogger({
   colorLevel: ColorLevel.${colorLevel},${
           prefix ? `\n  prefix: '${prefix}',` : ""
         }
@@ -800,7 +800,7 @@ const logger = new Logger({
         const redaction = document.getElementById("redaction").checked;
 
         const transport = new DemoTransport("object-output");
-        const logger = new Logger({
+        const logger = createLogger({
           compactObjects,
           redaction,
           transports: [transport],
@@ -864,7 +864,7 @@ const logger = new Logger({
 
       window.realWorldExample = function (scenario) {
         const transport = new DemoTransport("realworld-output");
-        const baseLogger = new Logger({ transports: [transport] });
+        const baseLogger = createLogger({ transports: [transport] });
 
         switch (scenario) {
           case "api":
@@ -982,7 +982,7 @@ const logger = new Logger({
           transport.write(`\n=== ${name} (${description}) ===`);
 
           // Create logger with demo transport and same config as the instance
-          const demoLogger = new Logger({
+          const demoLogger = createLogger({
             preset: name === "logger" ? "standard" : name.replace("Logger", ""),
             transports: [transport],
           });
@@ -1019,12 +1019,12 @@ const logger = new Logger({
 
         // Standard logger
         transport.write("📋 Standard Logger:");
-        const standardLogger = new Logger({ transports: [transport] });
+        const standardLogger = createLogger({ transports: [transport] });
         standardLogger.info(message, data);
 
         // Compact logger
         transport.write("\n💾 Compact Logger:");
-        const demoCompactLogger = new Logger({
+        const demoCompactLogger = createLogger({
           preset: "compact",
           transports: [transport],
         });
@@ -1032,7 +1032,7 @@ const logger = new Logger({
 
         // Readable logger
         transport.write("\n👁️ Readable Logger:");
-        const demoReadableLogger = new Logger({
+        const demoReadableLogger = createLogger({
           preset: "readable",
           transports: [transport],
         });
@@ -1040,7 +1040,7 @@ const logger = new Logger({
 
         // Server logger
         transport.write("\n🖥️ Server Logger:");
-        const demoServerLogger = new Logger({
+        const demoServerLogger = createLogger({
           preset: "server",
           transports: [transport],
         });

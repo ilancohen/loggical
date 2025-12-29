@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { Logger } from '@core/logger';
+import { createLogger } from '@core/logger';
 import { LogLevel, ColorLevel } from '@/types/core.types';
 
 describe('Logger Integration Tests (Simplified)', () => {
@@ -33,7 +33,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Basic Logging', () => {
     it('should log basic messages', () => {
-      const logger = new Logger();
+      const logger = createLogger();
       
       logger.info('Test message');
       
@@ -42,7 +42,7 @@ describe('Logger Integration Tests (Simplified)', () => {
     });
 
     it('should respect minimum log level', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         minLevel: LogLevel.WARN,
       });
 
@@ -56,7 +56,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Timestamp Formatting', () => {
     it('should include timestamps when enabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         timestamped: true,
         colorLevel: ColorLevel.NONE,
       });
@@ -68,7 +68,7 @@ describe('Logger Integration Tests (Simplified)', () => {
     });
 
     it('should use short timestamps when enabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         timestamped: true,
         shortTimestamp: true,
         colorLevel: ColorLevel.NONE,
@@ -84,7 +84,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Prefix Functionality', () => {
     it('should include prefixes in log output', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         prefix: 'API',
         colorLevel: ColorLevel.NONE,
       });
@@ -96,7 +96,7 @@ describe('Logger Integration Tests (Simplified)', () => {
     });
 
     it('should handle multiple prefixes', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         prefix: ['API', 'V1'],
         colorLevel: ColorLevel.NONE,
       });
@@ -108,7 +108,7 @@ describe('Logger Integration Tests (Simplified)', () => {
     });
 
     it('should handle very long prefixes with basic truncation', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         prefix: ['VERY-LONG-PREFIX-NAME-THAT-SHOULD-BE-TRUNCATED'],
         colorLevel: ColorLevel.NONE,
       });
@@ -122,7 +122,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Context Integration', () => {
     it('should include context in log output', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
       }).withContext({
         userId: 'user123',
@@ -139,7 +139,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Symbol Usage', () => {
     it('should use symbols when enabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         useSymbols: true,
         colorLevel: ColorLevel.NONE,
       });
@@ -154,7 +154,7 @@ describe('Logger Integration Tests (Simplified)', () => {
     });
 
     it('should use text labels when symbols disabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         useSymbols: false,
         colorLevel: ColorLevel.NONE,
       });
@@ -171,7 +171,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Object Formatting', () => {
     it('should use compact object formatting when enabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         compactObjects: true,
         colorLevel: ColorLevel.NONE,
       });
@@ -187,7 +187,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Real-World Scenarios', () => {
     it('should handle API request logging', () => {
-      const apiLogger = new Logger({
+      const apiLogger = createLogger({
         prefix: 'API',
         useSymbols: true,
         compactObjects: true,
@@ -209,7 +209,7 @@ describe('Logger Integration Tests (Simplified)', () => {
     });
 
     it('should handle error logging with context', () => {
-      const errorLogger = new Logger({
+      const errorLogger = createLogger({
         prefix: 'ERROR-HANDLER',
         useSymbols: true,
         colorLevel: ColorLevel.NONE,
@@ -233,7 +233,7 @@ describe('Logger Integration Tests (Simplified)', () => {
 
   describe('Plugin System Integration', () => {
     it('should work with plugin system', async () => {
-      const logger = new Logger();
+      const logger = createLogger();
 
       // Test that plugin methods exist
       expect(typeof logger.installPlugin).toBe('function');

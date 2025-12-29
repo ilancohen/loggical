@@ -5,6 +5,62 @@ All notable changes to Loggical will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-12-29
+
+### 🚨 Breaking Changes
+
+#### Logger class no longer exported
+
+The `Logger` class is no longer exported. Use the `createLogger` factory function instead:
+
+**Before:**
+```javascript
+import { Logger } from 'loggical';
+const logger = new Logger({ prefix: 'APP' });
+```
+
+**After:**
+```javascript
+import { createLogger } from 'loggical';
+const logger = createLogger({ prefix: 'APP' });
+```
+
+### ✨ New Features
+
+#### Callable Logger Pattern
+
+Loggers are now callable functions, allowing per-call option overrides:
+
+```javascript
+const logger = createLogger({ compactObjects: true });
+
+// Normal compact output
+logger.info('Quick log', data);
+
+// Override for this call only (creates child logger)
+logger({ compactObjects: false }).info('Full dump', bigObject);
+
+// Override multiple options
+logger({ compactObjects: false, maxValueLength: 500 }).debug('Verbose', data);
+
+// Save child logger for reuse
+const verboseLogger = logger({ compactObjects: false });
+verboseLogger.info('Always verbose output');
+```
+
+#### New Types
+
+- `CallableLogger` - The new logger interface (callable function with methods)
+- `PerCallOptions` - Options that can be overridden per-call (`compactObjects`, `maxValueLength`, `colorLevel`)
+
+### Migration Guide
+
+1. Replace `new Logger()` with `createLogger()`
+2. Replace `import { Logger }` with `import { createLogger }`
+3. Update type annotations from `Logger` to `CallableLogger`
+
+---
+
 ## [1.0.0] - 2025-10-09
 
 ### 🎉 Initial Public Release
@@ -62,8 +118,8 @@ compactLogger.info('Task completed', { status: 'success' })
 
 #### Level 2: Light Customization (15% of users)
 ```javascript
-import { Logger } from 'loggical'
-const logger = new Logger({
+import { createLogger } from 'loggical'
+const logger = createLogger({
   preset: 'server',
   prefix: 'API',
   minLevel: LogLevel.WARN
@@ -72,8 +128,8 @@ const logger = new Logger({
 
 #### Level 3: Full Control (5% of users)
 ```javascript
-import { Logger, ColorLevel, FileTransport } from 'loggical'
-const logger = new Logger({
+import { createLogger, ColorLevel, FileTransport } from 'loggical'
+const logger = createLogger({
   colorLevel: ColorLevel.ENHANCED,
   timestamped: true,
   compactObjects: false,
@@ -156,5 +212,6 @@ Thank you to all the contributors who helped make this release possible!
 
 ---
 
+[2.0.0]: https://github.com/ilancohen/loggical/releases/tag/v2.0.0
 [1.0.0]: https://github.com/ilancohen/loggical/releases/tag/v1.0.0
 

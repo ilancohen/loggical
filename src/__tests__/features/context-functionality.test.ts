@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { Logger } from '@core/logger';
+import { createLogger, type CallableLogger } from '@core/logger';
 import { ColorLevel } from '@/types/core.types';
 
 describe('Context Functionality', () => {
@@ -18,14 +18,14 @@ describe('Context Functionality', () => {
 
   describe('withContext method', () => {
     it('should add single key-value context', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext('userId', '12345');
 
       expect(contextLogger.getContext()).toEqual({ userId: '12345' });
     });
 
     it('should add multiple contexts via object syntax', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext({
         userId: '12345',
         requestId: 'abc-def',
@@ -40,7 +40,7 @@ describe('Context Functionality', () => {
     });
 
     it('should return new logger instance (immutable)', () => {
-      const logger = new Logger();
+      const logger = createLogger();
       const contextLogger = logger.withContext('key', 'value');
 
       expect(contextLogger).not.toBe(logger);
@@ -49,7 +49,7 @@ describe('Context Functionality', () => {
     });
 
     it('should merge with existing context', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const logger1 = logger.withContext('userId', '12345');
       const logger2 = logger1.withContext('requestId', 'abc-def');
 
@@ -60,7 +60,7 @@ describe('Context Functionality', () => {
     });
 
     it('should override existing context keys', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const logger1 = logger.withContext('userId', '12345');
       const logger2 = logger1.withContext('userId', '67890');
 
@@ -68,7 +68,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle object syntax merging', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const logger1 = logger.withContext('userId', '12345');
       const logger2 = logger1.withContext({
         requestId: 'abc-def',
@@ -84,7 +84,7 @@ describe('Context Functionality', () => {
 
   describe('withoutContext method', () => {
     it('should remove all context', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext({
         userId: '12345',
         requestId: 'abc-def',
@@ -99,7 +99,7 @@ describe('Context Functionality', () => {
     });
 
     it('should return new logger instance', () => {
-      const logger = new Logger();
+      const logger = createLogger();
       const contextLogger = logger.withContext('key', 'value');
       const cleanLogger = contextLogger.withoutContext();
 
@@ -110,7 +110,7 @@ describe('Context Functionality', () => {
 
   describe('withoutContextKey method', () => {
     it('should remove specific context key', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext({
         userId: '12345',
         requestId: 'abc-def',
@@ -125,7 +125,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle non-existent keys gracefully', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext('userId', '12345');
       const filteredLogger = contextLogger.withoutContextKey('nonExistent');
 
@@ -133,7 +133,7 @@ describe('Context Functionality', () => {
     });
 
     it('should return new logger instance', () => {
-      const logger = new Logger();
+      const logger = createLogger();
       const contextLogger = logger.withContext('key', 'value');
       const filteredLogger = contextLogger.withoutContextKey('key');
 
@@ -144,7 +144,7 @@ describe('Context Functionality', () => {
 
   describe('context preservation in other withX methods', () => {
     it('should preserve context in withPrefix', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext('userId', '12345');
       const prefixedLogger = contextLogger.withPrefix('API');
 
@@ -152,7 +152,7 @@ describe('Context Functionality', () => {
     });
 
     it('should preserve context when creating new loggers with presets', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
       const contextLogger = logger.withContext({
         userId: '12345',
         requestId: 'req-abc-123',
@@ -160,9 +160,9 @@ describe('Context Functionality', () => {
       });
 
       // Test creating new loggers with presets - demonstrates the new pattern
-      const compactLogger = new Logger({ preset: 'compact' });
-      const readableLogger = new Logger({ preset: 'readable' });
-      const serverLogger = new Logger({ preset: 'server' });
+      const compactLogger = createLogger({ preset: 'compact' });
+      const readableLogger = createLogger({ preset: 'readable' });
+      const serverLogger = createLogger({ preset: 'server' });
 
       const expectedContext = {
         userId: '12345',
@@ -184,7 +184,7 @@ describe('Context Functionality', () => {
 
   describe('context in log output', () => {
     it('should include context in log messages (compact mode)', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         compactObjects: true,
@@ -203,7 +203,7 @@ describe('Context Functionality', () => {
     });
 
     it('should include context in log messages (expanded mode)', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         compactObjects: false,
@@ -221,7 +221,7 @@ describe('Context Functionality', () => {
     });
 
     it('should not show empty context', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -235,7 +235,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle complex context values', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         compactObjects: true,
@@ -257,7 +257,7 @@ describe('Context Functionality', () => {
 
   describe('method chaining', () => {
     it('should support fluent method chaining', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -279,7 +279,7 @@ describe('Context Functionality', () => {
     });
 
     it('should support removing and adding context in chain', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
 
       const result = logger
         .withContext({ userId: '12345', sessionId: 'old-session' })
@@ -297,7 +297,7 @@ describe('Context Functionality', () => {
 
   describe('edge cases and serialization', () => {
     it('should handle context with circular references', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -316,7 +316,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle complex object types in context', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -353,7 +353,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle BigInt serialization gracefully', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -371,7 +371,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle context key collisions properly', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
 
       // Test overwriting same key multiple times
       const result = logger
@@ -383,7 +383,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle context key collisions with object spread', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
 
       const result = logger
         .withContext({ userId: '123', sessionId: 'abc' })
@@ -398,7 +398,7 @@ describe('Context Functionality', () => {
     });
 
     it('should preserve context immutability across chains', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
 
       const step1 = logger.withContext('step', '1');
       const step2 = step1.withContext('step', '2');
@@ -412,7 +412,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle deeply nested context objects', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -445,7 +445,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle special string values in context', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -472,7 +472,7 @@ describe('Context Functionality', () => {
 
   describe('performance and memory', () => {
     it('should handle large context objects efficiently', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -505,7 +505,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle many context keys efficiently', () => {
-      let logger = new Logger({
+      let logger: CallableLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -530,10 +530,10 @@ describe('Context Functionality', () => {
     });
 
     it('should handle context memory cleanup properly', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE });
 
       // Create multiple logger instances with context
-      const loggers: Logger[] = [];
+      const loggers: CallableLogger[] = [];
       for (let i = 0; i < 100; i++) {
         const contextLogger = logger.withContext(`iteration_${i}`, {
           data: new Array(1000).fill(`data_${i}`),
@@ -555,7 +555,7 @@ describe('Context Functionality', () => {
 
   describe('context interaction with other features', () => {
     it('should preserve context through prefix operations', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
       });
@@ -583,7 +583,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle context with enhanced features enabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         timestamped: true,
         useSymbols: true,
         colorLevel: ColorLevel.ENHANCED,
@@ -604,7 +604,7 @@ describe('Context Functionality', () => {
     });
 
     it('should handle context with redaction enabled', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         redaction: true,

@@ -44,7 +44,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run || echo 'No tests found'",

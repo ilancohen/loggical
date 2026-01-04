@@ -5,7 +5,7 @@ import {
   type FilteredStackTrace,
 } from '@utils/stack-trace';
 import { LogLevel, type LogLevelType } from '@/types/core.types';
-import type { LoggerOptions } from '@/types/logger.types';
+import type { LoggerOptions, PerCallOptions, CallableLogger } from '@/types/logger.types';
 import type { Plugin } from '@/types/plugin.types';
 import { LogFormatter } from './log-formatter';
 import { TransportManager } from './transport-manager';
@@ -15,9 +15,10 @@ import { logSeparator, logSpace } from '@utils/structured-logs';
 import { normalizeArrayPattern } from '@utils/array';
 
 /**
- * Logger class for structured logging with colors and levels
+ * Internal Logger implementation class
+ * @internal Not exported - use createLogger() factory instead
  */
-export class Logger {
+class LoggerImpl {
   /**
    * Array of prefixes to prepend to log messages
    */
@@ -50,34 +51,8 @@ export class Logger {
 
 
   /**
-   * Create a new logger with options
-   *
-   * @param options Logger configuration options
-   *
-   * @example Simple Usage
-   * ```typescript
-   * // Default logger
-   * const logger = new Logger()
-   *
-   * // Use preset with light customization
-   * const apiLogger = new Logger({
-   *   preset: 'compact',
-   *   prefix: 'API',
-   *   minLevel: LogLevel.WARN
-   * })
-   * ```
-   *
-   * @example Advanced Configuration
-   * ```typescript
-   * // Full control over all options
-   * const customLogger = new Logger({
-   *   colorLevel: ColorLevel.ENHANCED,
-   *   timestamped: true,
-   *   compactObjects: false,
-   *   maxValueLength: 200,
-   *   transports: [new ConsoleTransport(), new FileTransport({ filename: 'app.log' })]
-   * })
-   * ```
+   * Create a new logger implementation
+   * @internal Use createLogger() factory instead
    */
   constructor(options: LoggerOptions = {}) {
     // Process complete configuration including preset handling and validation
@@ -103,46 +78,6 @@ export class Logger {
         console.error('Failed to install plugins during construction:', error);
       });
     }
-  }
-
-  /**
-   * Static factory method for creating a logger with default configuration
-   */
-  static create(options?: LoggerOptions): Logger {
-    return new Logger(options);
-  }
-
-  /**
-   * Static factory method for creating a compact logger
-   */
-  static compact(options?: Partial<LoggerOptions>): Logger {
-    return new Logger({ preset: 'compact', ...options });
-  }
-
-  /**
-   * Static factory method for creating a readable logger
-   */
-  static readable(options?: Partial<LoggerOptions>): Logger {
-    return new Logger({ preset: 'readable', ...options });
-  }
-
-  /**
-   * Static factory method for creating a server logger
-   */
-  static server(options?: Partial<LoggerOptions>): Logger {
-    return new Logger({ preset: 'server', ...options });
-  }
-
-  /**
-   * Static factory method for creating a development logger
-   */
-  static development(options?: Partial<LoggerOptions>): Logger {
-    return new Logger({
-      preset: 'readable',
-      minLevel: LogLevel.DEBUG,
-      timestamped: true,
-      ...options,
-    });
   }
 
   /**
@@ -297,25 +232,10 @@ export class Logger {
 
   /**
    * Create a new logger with an additional prefix
-   *
-   * Prefixes are displayed before each log message to identify the source or component.
-   * They can be automatically abbreviated if `abbreviatePrefixes` is enabled.
-   *
-   * @param prefix The prefix to add (e.g., 'API', 'DATABASE', 'AUTH-SERVICE')
-   * @returns A new Logger instance with the additional prefix
-   *
-   * @example
-   * ```typescript
-   * const logger = new Logger()
-   * const apiLogger = logger.withPrefix('API-SERVER')
-   * const authLogger = apiLogger.withPrefix('AUTH')
-   *
-   * authLogger.info('User authenticated')
-   * // Output: [timestamp] ℹ️ [API-SERVER] [AUTH] User authenticated
-   * ```
+   * @internal
    */
-  withPrefix(prefix: string): Logger {
-    const newLogger = new Logger({
+  withPrefix(prefix: string): LoggerImpl {
+    const newLogger = new LoggerImpl({
       ...this.getOptions(),
       prefix: [...this.prefixes, prefix],
     });
@@ -326,58 +246,13 @@ export class Logger {
 
   /**
    * Add context that will appear in all subsequent log messages
-   *
-   * Context is persistent data that automatically appears in every log message from this logger instance.
-   * This is particularly useful for request-scoped logging where you want to include request ID, user ID, etc.
-   *
-   * @param context Either a key string or an object with key-value pairs
-   * @param value The value when using key-value syntax
-   * @returns A new Logger instance with the added context
-   *
-   * @example Basic Context Usage
-   * ```typescript
-   * // Key-value syntax
-   * const userLogger = logger.withContext('userId', 'user-123')
-   *
-   * // Object syntax
-   * const requestLogger = logger.withContext({
-   *   requestId: 'req-456',
-   *   method: 'POST',
-   *   ip: '192.168.1.1'
-   * })
-   *
-   * fullLogger.info('Processing request')
-   * // Output: [...] Processing request { requestId: "req-456", method: "POST", ip: "192.168.1.1" }
-   * ```
-   *
-   * @example Complete Context Example
-   * {@link https://github.com/ilcohen/loggical/blob/main/examples/context-example.js | View full context example}
-   * ```javascript
-   * // User Session Tracking
-   * const sessionLogger = logger.withContext({
-   *   userId: 'user-12345',
-   *   sessionId: 'sess-abc-123',
-   *   role: 'admin'
-   * })
-   *
-   * sessionLogger.info('User session started')
-   *
-   * // Request/Response Cycle
-   * const requestLogger = sessionLogger.withContext({
-   *   requestId: 'req-def-456',
-   *   method: 'POST',
-   *   endpoint: '/api/users'
-   * })
-   *
-   * requestLogger.info('Incoming request')
-   * requestLogger.info('Request processed successfully')
-   * ```
+   * @internal
    */
   withContext(
     context: string | Record<string, unknown>,
     value?: unknown,
-  ): Logger {
-    const newLogger = new Logger({
+  ): LoggerImpl {
+    const newLogger = new LoggerImpl({
       ...this.getOptions(),
       prefix: this.prefixes,
     });
@@ -391,10 +266,10 @@ export class Logger {
 
   /**
    * Remove all context from the logger
-   * @returns A new Logger instance with no context
+   * @internal
    */
-  withoutContext(): Logger {
-    const newLogger = new Logger({
+  withoutContext(): LoggerImpl {
+    const newLogger = new LoggerImpl({
       ...this.getOptions(),
       prefix: this.prefixes,
     });
@@ -404,11 +279,10 @@ export class Logger {
 
   /**
    * Remove a specific context key
-   * @param key The context key to remove
-   * @returns A new Logger instance without the specified context key
+   * @internal
    */
-  withoutContextKey(key: string): Logger {
-    const newLogger = new Logger({
+  withoutContextKey(key: string): LoggerImpl {
+    const newLogger = new LoggerImpl({
       ...this.getOptions(),
       prefix: this.prefixes,
     });
@@ -542,4 +416,197 @@ export class Logger {
       logSpace();
     }
   }
+}
+
+/**
+ * Create a callable logger instance
+ *
+ * This is the primary way to create loggers in Loggical. The returned logger
+ * is callable, allowing per-call option overrides by calling it as a function.
+ *
+ * @param options Logger configuration options
+ * @returns A CallableLogger instance
+ *
+ * @example Basic Usage
+ * ```typescript
+ * import { createLogger } from 'loggical';
+ *
+ * // Create with defaults
+ * const logger = createLogger();
+ *
+ * // Create with options
+ * const appLogger = createLogger({
+ *   prefix: 'APP',
+ *   compactObjects: true,
+ *   minLevel: LogLevel.INFO
+ * });
+ * ```
+ *
+ * @example Per-Call Option Overrides
+ * ```typescript
+ * const logger = createLogger({ compactObjects: true });
+ *
+ * // Normal compact output
+ * logger.info('Quick log', data);
+ *
+ * // Override for this call only (creates child logger, GC'd if not saved)
+ * logger({ compactObjects: false }).info('Full dump', bigObject);
+ *
+ * // Save child logger for reuse
+ * const verboseLogger = logger({ compactObjects: false, maxValueLength: 500 });
+ * verboseLogger.debug('Detailed', data);
+ * ```
+ *
+ * @example Presets
+ * ```typescript
+ * const compactLogger = createLogger({ preset: 'compact' });
+ * const serverLogger = createLogger({ preset: 'server' });
+ * ```
+ */
+export function createLogger(options?: LoggerOptions): CallableLogger {
+  const impl = new LoggerImpl(options);
+
+  // Create the callable function that returns a child logger
+  const callable = ((overrides: PerCallOptions): CallableLogger => {
+    return createLogger({ ...impl.getOptions(), ...overrides });
+  }) as CallableLogger;
+
+  // Bind all logging methods
+  callable.debug = impl.debug.bind(impl);
+  callable.info = impl.info.bind(impl);
+  callable.warn = impl.warn.bind(impl);
+  callable.error = impl.error.bind(impl);
+  callable.highlight = impl.highlight.bind(impl);
+  callable.fatal = impl.fatal.bind(impl);
+
+  // Bind builder methods that return new callable loggers
+  callable.withPrefix = (prefix: string): CallableLogger => {
+    const newImpl = impl.withPrefix(prefix);
+    return createCallableFromImpl(newImpl);
+  };
+
+  callable.withContext = (
+    context: string | Record<string, unknown>,
+    value?: unknown,
+  ): CallableLogger => {
+    const newImpl = impl.withContext(context, value);
+    return createCallableFromImpl(newImpl);
+  };
+
+  callable.withoutContext = (): CallableLogger => {
+    const newImpl = impl.withoutContext();
+    return createCallableFromImpl(newImpl);
+  };
+
+  callable.withoutContextKey = (key: string): CallableLogger => {
+    const newImpl = impl.withoutContextKey(key);
+    return createCallableFromImpl(newImpl);
+  };
+
+  // Bind configuration access methods
+  callable.getOptions = impl.getOptions.bind(impl);
+  callable.getContext = impl.getContext.bind(impl);
+
+  // Wrap transport management methods that return `this` for chaining
+  callable.addTransport = (transport: Transport) => {
+    impl.addTransport(transport);
+    return callable;
+  };
+  callable.removeTransport = (transportName: string) => {
+    impl.removeTransport(transportName);
+    return callable;
+  };
+  callable.getTransport = impl.getTransport.bind(impl);
+  callable.getTransports = impl.getTransports.bind(impl);
+  callable.clearTransports = () => {
+    impl.clearTransports();
+    return callable;
+  };
+  callable.getTransportStatus = impl.getTransportStatus.bind(impl);
+
+  // Bind plugin management methods
+  callable.installPlugin = impl.installPlugin.bind(impl);
+  callable.uninstallPlugin = impl.uninstallPlugin.bind(impl);
+  callable.getPlugins = impl.getPlugins.bind(impl);
+  callable.hasPlugin = impl.hasPlugin.bind(impl);
+
+  // Bind lifecycle methods
+  callable.close = impl.close.bind(impl);
+
+  return callable;
+}
+
+/**
+ * Create a CallableLogger from an existing LoggerImpl instance
+ * Used internally for methods like withPrefix/withContext that return new loggers
+ * @internal
+ */
+function createCallableFromImpl(impl: LoggerImpl): CallableLogger {
+  const callable = ((overrides: PerCallOptions): CallableLogger => {
+    return createLogger({ ...impl.getOptions(), ...overrides });
+  }) as CallableLogger;
+
+  // Bind all logging methods
+  callable.debug = impl.debug.bind(impl);
+  callable.info = impl.info.bind(impl);
+  callable.warn = impl.warn.bind(impl);
+  callable.error = impl.error.bind(impl);
+  callable.highlight = impl.highlight.bind(impl);
+  callable.fatal = impl.fatal.bind(impl);
+
+  // Bind builder methods
+  callable.withPrefix = (prefix: string): CallableLogger => {
+    const newImpl = impl.withPrefix(prefix);
+    return createCallableFromImpl(newImpl);
+  };
+
+  callable.withContext = (
+    context: string | Record<string, unknown>,
+    value?: unknown,
+  ): CallableLogger => {
+    const newImpl = impl.withContext(context, value);
+    return createCallableFromImpl(newImpl);
+  };
+
+  callable.withoutContext = (): CallableLogger => {
+    const newImpl = impl.withoutContext();
+    return createCallableFromImpl(newImpl);
+  };
+
+  callable.withoutContextKey = (key: string): CallableLogger => {
+    const newImpl = impl.withoutContextKey(key);
+    return createCallableFromImpl(newImpl);
+  };
+
+  // Bind configuration access methods
+  callable.getOptions = impl.getOptions.bind(impl);
+  callable.getContext = impl.getContext.bind(impl);
+
+  // Wrap transport management methods that return `this` for chaining
+  callable.addTransport = (transport: Transport) => {
+    impl.addTransport(transport);
+    return callable;
+  };
+  callable.removeTransport = (transportName: string) => {
+    impl.removeTransport(transportName);
+    return callable;
+  };
+  callable.getTransport = impl.getTransport.bind(impl);
+  callable.getTransports = impl.getTransports.bind(impl);
+  callable.clearTransports = () => {
+    impl.clearTransports();
+    return callable;
+  };
+  callable.getTransportStatus = impl.getTransportStatus.bind(impl);
+
+  // Bind plugin management methods
+  callable.installPlugin = impl.installPlugin.bind(impl);
+  callable.uninstallPlugin = impl.uninstallPlugin.bind(impl);
+  callable.getPlugins = impl.getPlugins.bind(impl);
+  callable.hasPlugin = impl.hasPlugin.bind(impl);
+
+  // Bind lifecycle methods
+  callable.close = impl.close.bind(impl);
+
+  return callable;
 }

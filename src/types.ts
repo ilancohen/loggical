@@ -15,7 +15,11 @@ export {
 } from './types/core.types';
 
 // Logger configuration types
-export type { LoggerOptions } from './types/logger.types';
+export type {
+  LoggerOptions,
+  PerCallOptions,
+  CallableLogger,
+} from './types/logger.types';
 
 // Transport system types
 export type {

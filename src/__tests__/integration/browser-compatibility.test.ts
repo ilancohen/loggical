@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { Logger, LogLevel } from '@/index';
+import { createLogger, LogLevel } from '@/index';
 import {
   isNodeEnvironment,
   isBrowserEnvironment,
@@ -130,7 +130,7 @@ describe('Browser Compatibility', () => {
       };
 
       // Should not throw
-      expect(() => new Logger()).not.toThrow();
+      expect(() => createLogger()).not.toThrow();
     });
 
     it('should respect minLevel option in browser', () => {
@@ -139,7 +139,7 @@ describe('Browser Compatibility', () => {
       ;(globalThis as any).window = {}
       ;(globalThis as any).document = {};
 
-      const logger = new Logger({ minLevel: LogLevel.ERROR });
+      const logger = createLogger({ minLevel: LogLevel.ERROR });
       expect(logger.getOptions().minLevel).toBe(LogLevel.ERROR);
     });
 
@@ -153,7 +153,7 @@ describe('Browser Compatibility', () => {
         getItem: vi.fn(() => null),
       };
 
-      const logger = new Logger();
+      const logger = createLogger();
       // Should default to INFO level in production
       expect(logger.getOptions().minLevel).toBe(LogLevel.INFO);
     });
@@ -168,7 +168,7 @@ describe('Browser Compatibility', () => {
         getItem: vi.fn(() => null),
       };
 
-      const logger = new Logger();
+      const logger = createLogger();
       // Should default to DEBUG level in development
       expect(logger.getOptions().minLevel).toBe(LogLevel.DEBUG);
     });

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Logger } from '@core/logger';
+import { createLogger } from '@core/logger';
 import { ConsoleTransport } from '@transports/console-transport';
 import { FileTransport } from '@transports/file-transport';
 import {
@@ -70,7 +70,7 @@ describe('Transport Integration', () => {
 
   describe('Logger Transport Integration', () => {
     it('should use console transport by default', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
 
       const transports = logger.getTransports();
       expect(transports).toHaveLength(1);
@@ -79,7 +79,7 @@ describe('Transport Integration', () => {
 
     it('should accept custom transports', () => {
       const customTransport = new ConsoleTransport();
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [customTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -94,7 +94,7 @@ describe('Transport Integration', () => {
       const consoleTransport = new ConsoleTransport();
       const fileTransport = new FileTransport({ filename: '/logs/test.log' });
 
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [consoleTransport, fileTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -106,7 +106,7 @@ describe('Transport Integration', () => {
     });
 
     it('should add and remove transports dynamically', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
 
       expect(logger.getTransports()).toHaveLength(1);
 
@@ -120,7 +120,7 @@ describe('Transport Integration', () => {
     });
 
     it('should get transport status', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
 
       const statuses = logger.getTransportStatus();
       expect(statuses).toHaveLength(1);
@@ -130,7 +130,7 @@ describe('Transport Integration', () => {
     });
 
     it('should clear all transports', () => {
-      const logger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+      const logger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
       logger.addTransport(new FileTransport({ filename: '/logs/test.log' }));
 
       expect(logger.getTransports()).toHaveLength(2);
@@ -146,7 +146,7 @@ describe('Transport Integration', () => {
         close: vi.fn(),
       };
 
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [mockTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -166,7 +166,7 @@ describe('Transport Integration', () => {
         }),
       };
 
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [errorTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -199,7 +199,7 @@ describe('Transport Integration', () => {
       }
 
       const customTransport = new TestTransport();
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [customTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -229,7 +229,7 @@ describe('Transport Integration', () => {
       }
 
       const customTransport = new TestTransport({ minLevel: LogLevel.WARN });
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [customTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -247,7 +247,7 @@ describe('Transport Integration', () => {
     });
 
     it('should preserve logger options across transport operations', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         prefix: ['TEST'],
@@ -267,7 +267,7 @@ describe('Transport Integration', () => {
       const consoleTransport = new ConsoleTransport({ minLevel: LogLevel.INFO });
       const debugTransport = new ConsoleTransport({ minLevel: LogLevel.DEBUG });
 
-      const logger = new Logger({
+      const logger = createLogger({
         transports: [consoleTransport, debugTransport],
         colorLevel: ColorLevel.NONE,
         timestamped: false,

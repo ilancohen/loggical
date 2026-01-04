@@ -3,9 +3,15 @@
  *
  * These pre-configured loggers are the primary way most users interact with Loggical.
  * They provide optimized settings for common use cases without requiring any configuration.
+ *
+ * All instances are callable, allowing per-call option overrides:
+ * @example
+ * ```typescript
+ * logger({ compactObjects: false }).info('Full dump', bigObject)
+ * ```
  */
 
-import { Logger } from '@core/logger';
+import { createLogger } from '@core/logger';
 
 /**
  * Default logger instance with standard configuration
@@ -19,9 +25,12 @@ import { Logger } from '@core/logger';
  *
  * logger.info('Application started')
  * logger.error('Something went wrong', { error: 'details' })
+ *
+ * // Per-call option override
+ * logger({ compactObjects: false }).info('Full object', data)
  * ```
  */
-export const logger = Logger.create();
+export const logger = createLogger();
 
 /**
  * Compact logger optimized for space-efficient logging
@@ -36,9 +45,12 @@ export const logger = Logger.create();
  *
  * compactLogger.info('Task completed', { id: 'task-123', duration: 150 })
  * // Output: 14:32:18.456 ℹ️ Task completed { id: "task-123", duration: 150ms }
+ *
+ * // Override compact mode for detailed output
+ * compactLogger({ compactObjects: false }).debug('Full details', data)
  * ```
  */
-export const compactLogger = Logger.compact();
+export const compactLogger = createLogger({ preset: 'compact' });
 
 /**
  * Enhanced readable logger for development and debugging
@@ -56,7 +68,7 @@ export const compactLogger = Logger.compact();
  * // Output: 14:32:18.456 ℹ️ [API-SVR] +2s Request processed
  * ```
  */
-export const readableLogger = Logger.readable();
+export const readableLogger = createLogger({ preset: 'readable' });
 
 /**
  * Production logger optimized for server environments
@@ -74,4 +86,4 @@ export const readableLogger = Logger.readable();
  * // Output: 14:32:18.456 ⚠️ [API-GTW] High memory usage { usage: 85.7%, threshold: 80% }
  * ```
  */
-export const serverLogger = Logger.server();
+export const serverLogger = createLogger({ preset: 'server' });

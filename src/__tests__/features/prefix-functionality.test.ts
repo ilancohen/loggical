@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Logger, ColorLevel } from '@/index';
+import { createLogger, ColorLevel } from '@/index';
 
 describe('Logger Prefix Functionality', () => {
   let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
@@ -15,7 +15,7 @@ describe('Logger Prefix Functionality', () => {
 
   describe('Basic logger vs getLogger with prefix', () => {
     it('should show no prefix for basic Logger instance', () => {
-      const basicLogger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+      const basicLogger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
       basicLogger.info('Test message');
 
       expect(consoleInfoSpy).toHaveBeenCalledTimes(1);
@@ -26,9 +26,9 @@ describe('Logger Prefix Functionality', () => {
       expect(logOutput).not.toMatch(/\[.*\]/);
     });
 
-    it('should show prefix when using Logger constructor with prefix', () => {
-      const prefixedLogger = new Logger({ prefix: 'OAUTH' });
-      const testLogger = new Logger({
+    it('should show prefix when using createLogger with prefix', () => {
+      const prefixedLogger = createLogger({ prefix: 'OAUTH' });
+      const testLogger = createLogger({
         ...prefixedLogger.getOptions(),
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -55,7 +55,7 @@ describe('Logger Prefix Functionality', () => {
       ];
 
       prefixes.forEach((prefix, index) => {
-        const logger = new Logger({ prefix, colorLevel: ColorLevel.NONE, timestamped: false });
+        const logger = createLogger({ prefix, colorLevel: ColorLevel.NONE, timestamped: false });
         logger.info(`${prefix} message ${index}`);
       });
 
@@ -69,7 +69,7 @@ describe('Logger Prefix Functionality', () => {
     });
 
     it('should handle multiple prefixes correctly', () => {
-      const multiLogger = new Logger({
+      const multiLogger = createLogger({
         prefix: ['API', 'AUTH', 'SERVICE'],
         colorLevel: ColorLevel.NONE,
         timestamped: false,
@@ -84,7 +84,7 @@ describe('Logger Prefix Functionality', () => {
     });
 
     it('should work with withPrefix() method chaining', () => {
-      const baseLogger = new Logger({ colorLevel: ColorLevel.NONE, timestamped: false });
+      const baseLogger = createLogger({ colorLevel: ColorLevel.NONE, timestamped: false });
       const chainedLogger = baseLogger.withPrefix('RUNTIME').withPrefix('MODULE');
       chainedLogger.info('Chained prefix message');
 
@@ -96,10 +96,10 @@ describe('Logger Prefix Functionality', () => {
     });
   });
 
-  describe('Logger constructor with prefix behavior', () => {
+  describe('createLogger with prefix behavior', () => {
     it('should create different logger instances with different prefixes', () => {
-      const oauthLogger = new Logger({ prefix: 'OAUTH' });
-      const dbLogger = new Logger({ prefix: 'DATABASE' });
+      const oauthLogger = createLogger({ prefix: 'OAUTH' });
+      const dbLogger = createLogger({ prefix: 'DATABASE' });
 
       // Verify they have different configurations
       expect(oauthLogger.getOptions().prefix).toEqual(['OAUTH']);
@@ -110,7 +110,7 @@ describe('Logger Prefix Functionality', () => {
     });
 
     it('should create loggers with the expected prefix configuration', () => {
-      const serverLogger = new Logger({ prefix: 'SERVER' });
+      const serverLogger = createLogger({ prefix: 'SERVER' });
       const options = serverLogger.getOptions();
 
       expect(options.prefix).toEqual(['SERVER']);

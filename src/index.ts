@@ -5,24 +5,36 @@
  *
  * @example Simple Usage (80% of users)
  * ```typescript
- * import { compactLogger } from 'loggical'
- * compactLogger.info('Hello world')
+ * import { logger } from 'loggical'
+ * logger.info('Hello world')
  * ```
  *
  * @example Light Customization (15% of users)
  * ```typescript
- * import { Logger, LogLevel } from 'loggical'
- * const logger = new Logger({
+ * import { createLogger, LogLevel } from 'loggical'
+ * const logger = createLogger({
  *   preset: 'compact',
  *   prefix: 'API',
  *   minLevel: LogLevel.WARN
  * })
  * ```
  *
+ * @example Per-Call Option Overrides
+ * ```typescript
+ * import { createLogger } from 'loggical'
+ * const logger = createLogger({ compactObjects: true })
+ *
+ * // Normal compact output
+ * logger.info('Quick log', data)
+ *
+ * // Full object output for this call only
+ * logger({ compactObjects: false }).info('Full dump', bigObject)
+ * ```
+ *
  * @example Full Control (5% of users)
  * ```typescript
- * import { Logger, LogLevel, ColorLevel } from 'loggical'
- * const logger = new Logger({
+ * import { createLogger, ColorLevel } from 'loggical'
+ * const logger = createLogger({
  *   colorLevel: ColorLevel.ENHANCED,
  *   timestamped: true,
  *   compactObjects: false,
@@ -32,10 +44,12 @@
  */
 
 // Core exports
-export { Logger } from '@core/logger';
+export { createLogger } from '@core/logger';
 export { LogLevel, LogLevelNames, ColorLevel } from '@/types';
 export type {
   LoggerOptions,
+  PerCallOptions,
+  CallableLogger,
   LogLevelType,
   ColorLevelType,
   Transport,

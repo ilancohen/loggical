@@ -472,7 +472,7 @@
             </p>
             <div class="code-example">
               <code
-                >import { logger, compactLogger, readableLogger, serverLogger }
+                >import { createLogger, compactLogger, readableLogger, serverLogger }
                 from 'loggical'</code
               >
             </div>
@@ -714,7 +714,7 @@
           const transport = new DemoTransport(`${presetName}-output`);
           transport.clear();
 
-          const logger = new Logger({
+          const logger = createLogger({
             ...presets[presetName],
             transports: [transport],
           });
@@ -736,7 +736,7 @@
           transport.setColorLevel(ColorLevel[colorLevel]);
           transport.clear();
 
-          const logger = new Logger({
+          const logger = createLogger({
             colorLevel: ColorLevel[colorLevel],
             transports: [transport],
           });
@@ -773,7 +773,7 @@
           const transport = new DemoTransport(config.id);
           transport.clear();
 
-          const logger = new Logger({
+          const logger = createLogger({
             ...config,
             transports: [transport],
           });
@@ -798,7 +798,7 @@
           const transport = new DemoTransport(config.id);
           transport.clear();
 
-          const logger = new Logger({
+          const logger = createLogger({
             ...config,
             transports: [transport],
           });
@@ -833,7 +833,7 @@
         transport.setColorLevel(ColorLevel[colorLevel]);
         transport.clear();
 
-        const logger = new Logger({
+        const logger = createLogger({
           colorLevel: ColorLevel[colorLevel],
           prefix: prefix || undefined,
           timestamped,
@@ -936,13 +936,13 @@
         // Standard logger
         transport.write("📋 logger (Standard):");
         const standardTransport = new DemoTransport("instances-output", false);
-        const standardLogger = new Logger({ transports: [standardTransport] });
+        const standardLogger = createLogger({ transports: [standardTransport] });
         standardLogger.info(message, data);
 
         // Compact logger
         transport.write("\n💾 compactLogger (Space-efficient):");
         const compactTransport = new DemoTransport("instances-output", false);
-        const demoCompactLogger = new Logger({
+        const demoCompactLogger = createLogger({
           preset: "compact",
           transports: [compactTransport],
         });
@@ -951,7 +951,7 @@
         // Readable logger
         transport.write("\n👁️ readableLogger (Development-friendly):");
         const readableTransport = new DemoTransport("instances-output", false);
-        const demoReadableLogger = new Logger({
+        const demoReadableLogger = createLogger({
           preset: "readable",
           transports: [readableTransport],
         });
@@ -960,7 +960,7 @@
         // Server logger
         transport.write("\n🖥️ serverLogger (Production-optimized):");
         const serverTransport = new DemoTransport("instances-output", false);
-        const demoServerLogger = new Logger({
+        const demoServerLogger = createLogger({
           preset: "server",
           transports: [serverTransport],
         });

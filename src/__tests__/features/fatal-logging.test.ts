@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { Logger } from '@core/logger';
+import { createLogger } from '@core/logger';
 import { LogLevel } from '@/types/core.types';
 
 describe('FATAL Level Logging (Simplified)', () => {
@@ -19,7 +19,7 @@ describe('FATAL Level Logging (Simplified)', () => {
 
   describe('basic fatal logging', () => {
     it('should log fatal messages without exiting process', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         minLevel: LogLevel.FATAL,
       });
 
@@ -34,7 +34,7 @@ describe('FATAL Level Logging (Simplified)', () => {
     });
 
     it('should handle fatal with data objects', () => {
-      const logger = new Logger();
+      const logger = createLogger();
 
       expect(() => {
         logger.fatal('Database connection lost', {
@@ -48,7 +48,7 @@ describe('FATAL Level Logging (Simplified)', () => {
     });
 
     it('should work with method chaining', () => {
-      const logger = new Logger()
+      const logger = createLogger()
         .withPrefix('DATABASE')
         .withContext('connectionId', 'conn-123');
 
@@ -65,7 +65,7 @@ describe('FATAL Level Logging (Simplified)', () => {
 
   describe('browser and environment safety', () => {
     it('should work safely in all environments', () => {
-      const logger = new Logger();
+      const logger = createLogger();
 
       expect(() => {
         logger.fatal('Critical error in any environment');
@@ -77,7 +77,7 @@ describe('FATAL Level Logging (Simplified)', () => {
 
   describe('edge cases', () => {
     it('should handle complex objects with fatal logging', () => {
-      const logger = new Logger();
+      const logger = createLogger();
       const complexData = {
         error: new Error('Connection failed'),
         metadata: { attempts: 3, timeout: 5000 },
@@ -92,7 +92,7 @@ describe('FATAL Level Logging (Simplified)', () => {
     });
 
     it('should handle fatal logging with circular references', () => {
-      const logger = new Logger();
+      const logger = createLogger();
       const circularObj: any = { name: 'test' };
       circularObj.self = circularObj;
 
@@ -104,7 +104,7 @@ describe('FATAL Level Logging (Simplified)', () => {
     });
 
     it('should handle multiple fatal calls', () => {
-      const logger = new Logger();
+      const logger = createLogger();
 
       expect(() => {
         logger.fatal('First fatal error');
@@ -118,7 +118,7 @@ describe('FATAL Level Logging (Simplified)', () => {
 
   describe('integration with other features', () => {
     it('should work with context', () => {
-      const logger = new Logger().withContext({
+      const logger = createLogger().withContext({
         requestId: 'req-123',
         userId: 'user-456',
       });
@@ -134,7 +134,7 @@ describe('FATAL Level Logging (Simplified)', () => {
     });
 
     it('should work with prefixes', () => {
-      const logger = new Logger({ prefix: 'CRITICAL-SYSTEM' });
+      const logger = createLogger({ prefix: 'CRITICAL-SYSTEM' });
 
       expect(() => {
         logger.fatal('System failure');
@@ -146,7 +146,7 @@ describe('FATAL Level Logging (Simplified)', () => {
     });
 
     it('should respect minimum log level', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         minLevel: LogLevel.FATAL + 1, // Above FATAL level
       });
 

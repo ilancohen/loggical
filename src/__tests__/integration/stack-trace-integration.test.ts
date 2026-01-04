@@ -1,16 +1,16 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { Logger } from '@core/logger';
+import { createLogger, type CallableLogger } from '@core/logger';
 import { LogLevel, ColorLevel } from '@/types/core.types';
 import { ConsoleTransport } from '@transports/console-transport';
 import { filterStackTrace, captureFilteredStackTrace, getCallerInfo } from '@utils/stack-trace';
 
 describe('Stack Trace Integration', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>;
-  let logger: Logger;
+  let logger: CallableLogger;
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    logger = new Logger({
+    logger = createLogger({
       colorLevel: ColorLevel.NONE,
       timestamped: false,
       transports: [new ConsoleTransport({ includeStackTrace: true })],
@@ -291,13 +291,13 @@ describe('Stack Trace Integration', () => {
 
   describe('Transport integration', () => {
     it('should work correctly with ConsoleTransport stack trace option', () => {
-      const loggerWithStackTrace = new Logger({
+      const loggerWithStackTrace = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         transports: [new ConsoleTransport({ includeStackTrace: true })],
       });
 
-      const loggerWithoutStackTrace = new Logger({
+      const loggerWithoutStackTrace = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         transports: [new ConsoleTransport({ includeStackTrace: false })],

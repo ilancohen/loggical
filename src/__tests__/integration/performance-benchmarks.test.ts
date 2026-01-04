@@ -1,5 +1,5 @@
 import { ColorLevel } from '@/types/core.types';
-import { Logger } from '@core/logger';
+import { createLogger, type CallableLogger } from '@core/logger';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Performance Benchmarks', () => {
@@ -39,7 +39,7 @@ describe('Performance Benchmarks', () => {
 
   describe('High-Volume Logging Performance', () => {
     it('should handle 10,000 simple log operations efficiently', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -71,7 +71,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle 1,000 complex object logs efficiently', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: true,
         redaction: true,
@@ -114,7 +114,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle burst logging with mixed log levels efficiently', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: true,
         // Console output suppressed by mocking
@@ -156,7 +156,7 @@ describe('Performance Benchmarks', () => {
 
   describe('Memory Usage Patterns', () => {
     it('should maintain stable memory usage with logger chains', () => {
-      const baseLogger = new Logger({
+      const baseLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -166,7 +166,7 @@ describe('Performance Benchmarks', () => {
       const startMemory = process.memoryUsage().heapUsed;
 
       // Create 1000 chained loggers
-      const loggers: Logger[] = [];
+      const loggers: CallableLogger[] = [];
       for (let i = 0; i < 1000; i++) {
         const chainedLogger = baseLogger
           .withPrefix(`PREFIX_${i}`)
@@ -194,7 +194,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle large context objects without memory leaks', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -235,7 +235,7 @@ describe('Performance Benchmarks', () => {
 
   describe('Redaction Performance', () => {
     it('should perform redaction efficiently on large objects', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         redaction: true,
@@ -276,7 +276,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle redaction toggle performance', () => {
-      const baseLogger = new Logger({
+      const baseLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -292,7 +292,7 @@ describe('Performance Benchmarks', () => {
 
       // Alternate between redacted and non-redacted logging
       for (let i = 0; i < 1000; i++) {
-        const logger = new Logger({
+        const logger = createLogger({
           colorLevel: ColorLevel.NONE,
           timestamped: false,
           redaction: i % 2 === 0, // Toggle redaction
@@ -312,7 +312,7 @@ describe('Performance Benchmarks', () => {
 
   describe('Context Performance', () => {
     it('should handle deep context chains efficiently', () => {
-      let logger = new Logger({
+      let logger: CallableLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -338,7 +338,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle context serialization performance', () => {
-      const logger = new Logger({
+      const logger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -390,7 +390,7 @@ describe('Performance Benchmarks', () => {
 
   describe('Prefix and Enhancement Performance', () => {
     it('should handle multiple prefix operations efficiently', () => {
-      const baseLogger = new Logger({
+      const baseLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -418,7 +418,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle enhanced logger creation performance', () => {
-      const baseLogger = new Logger({
+      const baseLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: false,
         // Console output suppressed by mocking
@@ -428,7 +428,7 @@ describe('Performance Benchmarks', () => {
 
       // Create many enhanced loggers using constructor
       for (let i = 0; i < 1000; i++) {
-        const enhanced = new Logger({
+        const enhanced = createLogger({
           compactObjects: true,
           shortTimestamp: true,
           maxValueLength: 60,
@@ -452,7 +452,7 @@ describe('Performance Benchmarks', () => {
 
   describe('Overall System Performance', () => {
     it('should handle mixed operations under load efficiently', () => {
-      const baseLogger = new Logger({
+      const baseLogger = createLogger({
         colorLevel: ColorLevel.NONE,
         timestamped: true,
         redaction: true,
@@ -500,7 +500,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should maintain performance with all features enabled', () => {
-      const fullFeatureLogger = new Logger({
+      const fullFeatureLogger = createLogger({
         colorLevel: ColorLevel.ENHANCED,
         timestamped: true,
         compactObjects: false,

@@ -5,7 +5,7 @@
  * This enables a small core with opt-in complexity.
  */
 
-import type { Logger } from '@core/logger';
+import type { CallableLogger } from './logger.types';
 
 /**
  * Plugin interface that all plugins must implement
@@ -21,13 +21,13 @@ export interface Plugin {
    * Install the plugin on a logger instance
    * This is called when the plugin is added to a logger
    */
-  install(logger: Logger): void | Promise<void>;
+  install(logger: CallableLogger): void | Promise<void>;
   
   /**
    * Uninstall the plugin from a logger instance
    * This is called when the plugin is removed or logger is destroyed
    */
-  uninstall?(logger: Logger): void | Promise<void>;
+  uninstall?(logger: CallableLogger): void | Promise<void>;
 }
 
 /**

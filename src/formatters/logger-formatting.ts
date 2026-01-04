@@ -4,7 +4,6 @@ import {
   type LogLevelType,
 } from '@/types/core.types';
 import type { LoggerOptions } from '@/types/logger.types';
-import { DEFAULT_LOGGER_OPTIONS } from '@presets/logger-configs';
 import {
   formatLogLevel,
 } from './color-formatting';
@@ -272,6 +271,9 @@ export function formatCompleteLog(
     compactObjects,
     colorLevel,
   });
+  // Add a space after levelDisplay if it's not empty.
+  // This ensures the space is part of the string, not just a separator.
+  const levelDisplayWithSpace = levelDisplay ? `${levelDisplay} ` : '';
 
   const formattedPrefix = formatLogPrefix(prefix, level, {
     colorLevel,
@@ -297,7 +299,7 @@ export function formatCompleteLog(
 
   return joinNonEmpty([
     dimmedTimestamp,
-    levelDisplay,
+    levelDisplayWithSpace,
     formattedPrefix,
     contextPart,
     messageParts,

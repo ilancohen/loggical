@@ -1,6 +1,6 @@
 {
   "name": "loggical",
-  "version": "1.0.1",
+  "version": "2.0.1",
   "description": "Universal logging library with progressive complexity - start simple, add power when needed. Works everywhere: Node.js and browser, with beautiful formatting that scales from zero-config to enterprise-grade logging.",
   "type": "module",
   "main": "dist/index.js",

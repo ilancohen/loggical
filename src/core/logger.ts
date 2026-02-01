@@ -14,6 +14,17 @@ import { PluginManager } from './plugin-manager';
 import { logSeparator, logSpace } from '@utils/structured-logs';
 import { normalizeArrayPattern } from '@utils/array';
 
+/** Global silence flag: when true, all loggers produce no output. Reversible via setGlobalSilenced(false). */
+let globalSilenced = false;
+
+export function getGlobalSilenced(): boolean {
+  return globalSilenced;
+}
+
+export function setGlobalSilenced(value: boolean): void {
+  globalSilenced = value;
+}
+
 /**
  * Internal Logger implementation class
  * @internal Not exported - use createLogger() factory instead
@@ -49,6 +60,10 @@ class LoggerImpl {
    */
   private pluginManager: PluginManager;
 
+  /**
+   * When true, this logger produces no output until unsilence() is called.
+   */
+  private silenced = false;
 
   /**
    * Create a new logger implementation
@@ -71,6 +86,7 @@ class LoggerImpl {
     this.transportManager = new TransportManager(transports);
     this.contextManager = new ContextManager();
     this.pluginManager = new PluginManager(this);
+    this.silenced = options.silenced ?? false;
 
     // Install plugins if provided (async, but don't wait)
     if (options.plugins) {
@@ -91,6 +107,9 @@ class LoggerImpl {
     stackTrace: FilteredStackTrace | undefined,
     ...messages: unknown[]
   ): void {
+    if (getGlobalSilenced() || this.silenced) {
+      return;
+    }
     // Check effective minLevel
     const effectiveMinLevel = this.config.minLevel;
     if (effectiveMinLevel !== undefined && level < effectiveMinLevel) {
@@ -227,7 +246,22 @@ class LoggerImpl {
       ...this.config,
       prefix: this.prefixes,
       transports: this.transportManager.getTransports(),
+      silenced: this.silenced,
     };
+  }
+
+  silence(): this {
+    this.silenced = true;
+    return this;
+  }
+
+  unsilence(): this {
+    this.silenced = false;
+    return this;
+  }
+
+  isSilenced(): boolean {
+    return this.silenced;
   }
 
   /**
@@ -507,6 +541,17 @@ export function createLogger(options?: LoggerOptions): CallableLogger {
   callable.getOptions = impl.getOptions.bind(impl);
   callable.getContext = impl.getContext.bind(impl);
 
+  // Silence control (return callable for chaining)
+  callable.silence = () => {
+    impl.silence();
+    return callable;
+  };
+  callable.unsilence = () => {
+    impl.unsilence();
+    return callable;
+  };
+  callable.isSilenced = impl.isSilenced.bind(impl);
+
   // Wrap transport management methods that return `this` for chaining
   callable.addTransport = (transport: Transport) => {
     impl.addTransport(transport);
@@ -581,6 +626,17 @@ function createCallableFromImpl(impl: LoggerImpl): CallableLogger {
   // Bind configuration access methods
   callable.getOptions = impl.getOptions.bind(impl);
   callable.getContext = impl.getContext.bind(impl);
+
+  // Silence control (return callable for chaining)
+  callable.silence = () => {
+    impl.silence();
+    return callable;
+  };
+  callable.unsilence = () => {
+    impl.unsilence();
+    return callable;
+  };
+  callable.isSilenced = impl.isSilenced.bind(impl);
 
   // Wrap transport management methods that return `this` for chaining
   callable.addTransport = (transport: Transport) => {

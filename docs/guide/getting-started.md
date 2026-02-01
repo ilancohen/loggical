@@ -107,6 +107,37 @@ const taskLogger = readableLogger.withPrefix('TASK-ENGINE')
 taskLogger.info('Processing started', { jobId: 'xyz789' })
 ```
 
+### Silencing Logs
+
+You can mute output per logger or globally; both are reversible.
+
+**Per-logger:** Use `silence()` and `unsilence()` on any logger, or create a logger with `silenced: true`.
+
+```typescript
+import { createLogger } from 'loggical'
+
+const log = createLogger({ prefix: 'App' })
+log.info('before')   // appears
+log.silence()
+log.info('hidden')   // no output
+log.unsilence()
+log.info('after')    // appears
+
+// Start silenced, enable when needed
+const quiet = createLogger({ silenced: true })
+quiet.unsilence().info('now')  // appears
+```
+
+**Global:** Silence all loggers (e.g. in tests), then restore.
+
+```typescript
+import { setGlobalSilenced, getGlobalSilenced } from 'loggical'
+
+setGlobalSilenced(true)
+logger.info('hidden')  // no output from any logger
+setGlobalSilenced(false)  // restore
+```
+
 ## Next Steps
 
 Choose your learning path based on your needs:

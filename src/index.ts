@@ -44,7 +44,11 @@
  */
 
 // Core exports
-export { createLogger } from '@core/logger';
+export {
+  createLogger,
+  getGlobalSilenced,
+  setGlobalSilenced,
+} from '@core/logger';
 export { LogLevel, LogLevelNames, ColorLevel } from '@/types';
 export type {
   LoggerOptions,

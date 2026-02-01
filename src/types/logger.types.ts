@@ -22,6 +22,8 @@ export interface LoggerOptions {
   // Common customization options
   prefix?: string | string[];
   minLevel?: LogLevelType;
+  /** If true, this logger produces no output until unsilence() is called */
+  silenced?: boolean;
 
   // Advanced formatting options
   colorLevel?: ColorLevelType;
@@ -113,6 +115,14 @@ export interface CallableLogger {
   getOptions(): LoggerOptions;
   /** Get the current context as a plain object */
   getContext(): Record<string, unknown>;
+
+  // Silence control (reversible)
+  /** Silence this logger; no output until unsilence() is called */
+  silence(): this;
+  /** Restore output for this logger */
+  unsilence(): this;
+  /** Whether this logger is currently silenced */
+  isSilenced(): boolean;
 
   // Transport management
   /** Add a transport to this logger */

@@ -5,6 +5,16 @@ All notable changes to Loggical will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Reversible log silencing** – Mute output per logger or globally, then restore.
+  - Per-logger: `logger.silence()`, `logger.unsilence()`, `logger.isSilenced()`; chainable.
+  - Option: `createLogger({ silenced: true })` to start muted.
+  - Global: `setGlobalSilenced(true)` / `setGlobalSilenced(false)` and `getGlobalSilenced()`.
+  - Derived loggers (e.g. from `withPrefix` / `withContext`) inherit the current silenced state via `getOptions()`.
+
 ## [2.0.0] - 2025-12-29
 
 ### 🚨 Breaking Changes

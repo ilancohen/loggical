@@ -119,6 +119,32 @@ requestLogger.error("Request failed", { error: "Timeout" });
 // Context automatically included
 ```
 
+### Silencing Logs
+
+Temporarily mute output per logger or globally; both are reversible.
+
+```javascript
+import { createLogger, setGlobalSilenced, getGlobalSilenced } from "loggical";
+
+// Per-logger: silence one logger
+const log = createLogger({ prefix: "App" });
+log.info("before");   // appears
+log.silence();
+log.info("hidden");   // no output
+log.unsilence();
+log.info("after");    // appears
+
+// Start silenced, then enable when needed
+const quiet = createLogger({ silenced: true });
+quiet.info("never");           // no output
+quiet.unsilence().info("now");  // appears
+
+// Global: silence all loggers (e.g. in tests)
+setGlobalSilenced(true);
+logger.info("hidden");  // no output from any logger
+setGlobalSilenced(false);  // restore
+```
+
 ## 📊 Log Levels
 
 Six comprehensive log levels with symbols:
@@ -288,6 +314,7 @@ const customLogger = createLogger({
   minLevel: LogLevel.DEBUG,
   colorLevel: ColorLevel.ENHANCED,
   timestamped: true,
+  silenced: false,  // set true to start muted; use silence()/unsilence() at runtime
   
   // Formatting
   compactObjects: true,

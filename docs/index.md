@@ -69,6 +69,15 @@ requestLogger.info('Request processed', {
 // }
 ```
 
+Silence logs when needed (per-logger or globally, reversible):
+
+```typescript
+log.silence()           // this logger only
+log.unsilence()
+setGlobalSilenced(true) // all loggers
+setGlobalSilenced(false)
+```
+
 ## Installation
 
 ::: code-group
